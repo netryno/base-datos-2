@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: tutorial-api
+    ports:
+      - "8072:8000"
+    environment:
+      # SQLite no necesita servidor: la BD es un archivo dentro del contenedor.
+      # La ruta apunta al volumen montado abajo para que los datos persistan.
+      - DATABASE_PATH=/app/data/personas.db
+    volumes:
+      # 🔴 IMPORTANTE: Montar el código para desarrollo (hot reload)
+      - .:/app
+      - /app/__pycache__          # Opcional: excluir caché
+
+      # 🔴 Bind mount a carpeta local ./data
+      # El archivo personas.db se crea AQUÍ (en tu host) y lo puedes abrir
+      # desde VSCode con una extensión SQLite (ver README).
+      - ./data:/app/data
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload

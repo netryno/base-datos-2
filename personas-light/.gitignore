@@ -1,0 +1,10 @@
+# Base de datos SQLite (se generan solas al arrancar el contenedor)
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+
+# Python
+__pycache__/
+*.pyc
+.venv/
