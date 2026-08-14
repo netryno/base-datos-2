@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: personas-seed
+    ports:
+      - "8083:8000"
+    environment:
+      # Cadena de conexión: postgresql://USUARIO:PASSWORD@HOST:PUERTO/DB
+      # "my-database" es el nombre del contenedor PostgreSQL que YA tienes corriendo
+
+      #docker red (se tiene que crear docker red)
+      #- DATABASE_URL=postgresql://alumno:123456@my-database:5432/db-personas
+
+      # ip local
+      #ifconfig | grep "inet " | grep -v 127.0.0.1
+      #- DATABASE_URL=postgresql://alumno:123456@192.168.1.3:5432/db-personas
+
+      # host interno
+      - DATABASE_URL=postgresql://alumno:123456@host.docker.internal:5432/db-personas
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      # 🔴 IMPORTANTE: Montar el código para desarrollo
+      - .:/app                    # Monta TODO el proyecto
+      - /app/__pycache__          # Opcional: excluir caché
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
