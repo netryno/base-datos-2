@@ -15,7 +15,7 @@ services:
       - DB_PORT=3306
       - DB_USER=root
       - DB_PASSWORD=setrootpassword
-      - DB_NAME=db-personas
+      - DB_NAME=bd_personas
     volumes:
       # 🔴 IMPORTANTE: Montar el código para desarrollo (hot reload)
       - .:/app
