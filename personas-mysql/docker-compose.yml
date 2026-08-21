@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: tutorial-api
+    ports:
+      - "8073:8000"
+    environment:
+      # Env vars de conexión a la BD (leídas por app/main.py).
+      # Apuntan al contenedor MySQL que YA corre en OTRO docker-compose
+      # (container_name: mysql_container). Los valores coinciden con los
+      # defaults del otro compose (MYSQL_DATABASE, MYSQL_ROOT_PASSWORD, ...).
+      - DB_HOST=mysql_container
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=setrootpassword
+      - DB_NAME=db-personas
+    volumes:
+      # 🔴 IMPORTANTE: Montar el código para desarrollo (hot reload)
+      - .:/app
+      - /app/__pycache__          # Opcional: excluir caché
+    networks:
+      - mysql
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+# Red externa creada por el OTRO docker-compose (el de MySQL + phpMyAdmin).
+# Docker la nombra "<nombre_proyecto>_mysql". Verificado con `docker network ls`.
+networks:
+  mysql:
+    external: true
+    name: mysql-phpmyadmin-docker-compose_mysql

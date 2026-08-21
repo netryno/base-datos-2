@@ -1,0 +1,7 @@
+# Datos de MySQL (volumen montado desde ./data)
+data/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
