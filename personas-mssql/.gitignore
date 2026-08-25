@@ -1,0 +1,7 @@
+# Datos locales (no se usa con SQL Server, pero se mantiene por orden)
+data/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
