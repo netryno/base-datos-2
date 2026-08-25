@@ -29,4 +29,5 @@ services:
 networks:
   mysql:
     external: true
-    name: mysql-phpmyadmin-docker-compose_mysql
+    #name: mysql-phpmyadmin-docker-compose_mysql
+    name: bd-mysql-docker_mysql
