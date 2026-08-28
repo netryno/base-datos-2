@@ -1,0 +1,4 @@
+fastapi==0.141.1
+uvicorn==0.52.4
+pyodbc==5.1.0
+Faker==33.0.0

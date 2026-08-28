@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: herramientas-api-mssql
+    ports:
+      - "8075:8000"
+    environment:
+      # Conexión al SQL Server que corre en OTRO contenedor docker
+      # (publicado en localhost:1433 del host). Desde dentro del
+      # contenedor usamos host.docker.internal para alcanzar el host.
+      - DB_HOST=host.docker.internal
+      - DB_PORT=1433
+      - DB_USER=sa
+      - DB_PASSWORD=AlumnoSql2025!
+      - DB_NAME=bd_herramientas
+    volumes:
+      # Montar el código para desarrollo (hot reload)
+      - .:/app
+      - /app/__pycache__
+    extra_hosts:
+      # Necesario en Linux; en Mac/Windows host.docker.internal ya existe.
+      - "host.docker.internal:host-gateway"
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
