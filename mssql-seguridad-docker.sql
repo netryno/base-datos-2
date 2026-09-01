@@ -34,16 +34,16 @@ lector_empleados_nombre	SELECT solo columna empleado_nombre de empleados
 USE master;
 GO
 IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'admin_bd')
-    CREATE LOGIN admin_bd WITH PASSWORD = 'Admin#2026';
+    CREATE LOGIN admin_bd WITH PASSWORD = 'Profe#2026';
 
 IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'lector')
-    CREATE LOGIN lector WITH PASSWORD = 'Lector#2026';
+    CREATE LOGIN lector WITH PASSWORD = 'SoloLeer#2026';
 
 IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'lector_herramientas')
-    CREATE LOGIN lector_herramientas WITH PASSWORD = 'Herram#2026';
+    CREATE LOGIN lector_herramientas WITH PASSWORD = 'SoloTools#2026';
 
 IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'lector_empleados_nombre')
-    CREATE LOGIN lector_empleados_nombre WITH PASSWORD = 'EmpNom#2026';
+    CREATE LOGIN lector_empleados_nombre WITH PASSWORD = 'Columna#2026';
 GO
 
 -- =====================================================
