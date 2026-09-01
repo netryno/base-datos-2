@@ -87,6 +87,14 @@ GO
 
 
 --4.- Verificar
+
+EXECUTE AS LOGIN = 'admin_bd';
+    SELECT SUSER_NAME() AS login_conectado,      -- debe decir: admin_bd
+           USER_NAME()  AS user_en_esta_bd;      -- en master puede salir vacío/guest: normal
+REVERT;
+GO
+
+
 -- ================= ADMIN: puede TODO =================
 EXECUTE AS LOGIN = 'admin_bd';
     SELECT TOP 3 * FROM dbo.empleados;                       -- ✅
