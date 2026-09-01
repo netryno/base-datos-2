@@ -12,18 +12,18 @@ services:
       # contenedor usamos host.docker.internal para alcanzar el host.
 
       ### sql server en docker
-      #- DB_HOST=host.docker.internal
-      #- DB_PORT=1433
-      #- DB_USER=sa
-      #- DB_PASSWORD=AlumnoSql2025!
-      #- DB_NAME=bd_herramientas
+      - DB_HOST=host.docker.internal
+      - DB_PORT=1433
+      - DB_USER=sa
+      - DB_PASSWORD=AlumnoSql2025!
+      - DB_NAME=bd_herramientas
 
       ### sql server en windows
-      - DB_HOST=host.docker.internal
-      - DB_PORT=1434
-      - DB_USER=alumno_admin
-      - DB_PASSWORD=TuPasswordAqui123!
-      - DB_NAME=bd_herramientas
+      #- DB_HOST=host.docker.internal
+      #- DB_PORT=1434
+      #- DB_USER=alumno_admin
+      #- DB_PASSWORD=TuPasswordAqui123!
+      #- DB_NAME=bd_herramientas
 
     volumes:
       # Montar el código para desarrollo (hot reload)
