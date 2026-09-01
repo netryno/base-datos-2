@@ -1,4 +1,6 @@
 
+USE bd_herramientas;
+GO
 /*===========================================================================
   3) TRIGGER: trg_empleado_nombre_editado
   ---------------------------------------------------------------------------
@@ -97,3 +99,24 @@ BEGIN
 END;
 GO
 
+
+
+
+
+-- 1) Probar el TRIGGER: insertar un empleado (el trigger añade el sufijo) -
+PRINT '>>> PRUEBA TRIGGER: insertando empleado...';
+EXEC dbo.sp_insertar_empleado
+     @empleado_nombre   = 'Juan Perez',
+     @puesto            = 'Tecnico',
+     @departamento_id   = 1;
+GO
+
+-- Verificar que el trigger modificó el nombre:
+PRINT '>>> Verificacion del trigger (nombre debe llevar _editado_trigger):';
+SELECT  empleado_id,
+        empleado_nombre,
+        puesto,
+        departamento_id
+FROM    dbo.empleados
+ORDER BY empleado_id DESC;
+GO

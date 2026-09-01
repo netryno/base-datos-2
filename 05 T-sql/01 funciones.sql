@@ -49,6 +49,11 @@ SELECT dbo.fn_factorial_recursivo(5) AS factorial_de_5;
 
 
 
+
+
+
+
+
 USE bd_herramientas;
 GO
 
@@ -83,4 +88,14 @@ RETURN
     GROUP BY e.empleado_id, e.empleado_nombre, e.puesto, d.departamento_nombre
     ORDER BY total_prestamos DESC, prestamos_abiertos DESC
 );
+GO
+
+
+
+
+
+
+-- 3) Probar la FUNCION: top 10 empleados con más préstamos ------------------
+PRINT '>>> PRUEBA FUNCION: top 10 empleados con mas prestamos:';
+SELECT * FROM dbo.fn_top10_empleados_prestamos();
 GO

@@ -37,6 +37,8 @@ SELECT @res AS factorial_de_5;
 
 
 
+USE bd_herramientas;
+GO
 /*===========================================================================
   2) PROCEDIMIENTO: sp_insertar_prestamo
   ---------------------------------------------------------------------------
@@ -115,4 +117,19 @@ BEGIN
         ;THROW;
     END CATCH
 END;
+GO
+
+
+
+
+
+
+-- 2) Probar el PROCEDIMIENTO de préstamo ------------------------------------
+PRINT '>>> PRUEBA PROCEDIMIENTO: insertando prestamo...';
+DECLARE @EmpId INT = (SELECT TOP 1 empleado_id FROM dbo.empleados ORDER BY empleado_id DESC);
+DECLARE @HerId INT = (SELECT TOP 1 herramienta_id FROM dbo.herramientas ORDER BY herramienta_id);
+
+EXEC dbo.sp_insertar_prestamo
+     @empleado_id    = @EmpId,
+     @herramienta_id = @HerId;
 GO
