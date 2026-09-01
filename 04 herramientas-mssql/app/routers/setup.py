@@ -8,14 +8,15 @@ Expone los "servicios" de preparación de la base de datos:
 1. POST /setup/init-db        → crea la BD y las tablas base (si no existen).
 2. POST /setup/seed-catalogos → carga departamentos y herramientas (estático).
 3. POST /setup/seed-empleados → carga N empleados aleatorios (dinámico).
+4. POST /setup/seed-prestamos → carga N préstamos aleatorios (dinámico, N:M).
 
-El orden recomendado es 1 → 2 → 3.
+El orden recomendado es 1 → 2 → 3 → 4.
 """
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, HTTPException
 
 from ..database import init_db
-from ..seeders import seed_catalogos, seed_empleados
+from ..seeders import seed_catalogos, seed_empleados, seed_prestamos
 
 router = APIRouter(prefix="/setup", tags=["1. Setup / Inicialización"])
 
@@ -71,9 +72,37 @@ def endpoint_seed_empleados(
     try:
         resumen = seed_empleados(cantidad)
     except ValueError as e:
-        from fastapi import HTTPException
         raise HTTPException(status_code=400, detail=str(e))
     return {
         "mensaje": f"Se insertaron {cantidad} empleados.",
+        "detalle": resumen,
+    }
+
+
+@router.post("/seed-prestamos", summary="Cargar N préstamos (seeder dinámico, N:M)")
+def endpoint_seed_prestamos(
+    cantidad: int = Query(
+        5, ge=0, le=100,
+        description="Cantidad de préstamos ACTIVOS a crear (uno por herramienta disponible).",
+        examples=[5],
+    )
+):
+    """
+    Crea préstamos **aleatorios** entre empleados y herramientas.
+
+    - Crea hasta `cantidad` préstamos **activos** (uno por herramienta
+      disponible; respeta la regla "una herramienta, un solo préstamo activo").
+    - Además crea algunos préstamos **históricos** (ya devueltos) para que se
+      vea la relación N:M a lo largo del tiempo.
+
+    Requiere que ya existan empleados y herramientas (ejecuta antes
+    `/setup/seed-empleados`).
+    """
+    try:
+        resumen = seed_prestamos(cantidad)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return {
+        "mensaje": "Seeder de préstamos ejecutado.",
         "detalle": resumen,
     }

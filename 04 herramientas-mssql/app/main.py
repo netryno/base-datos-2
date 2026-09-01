@@ -63,8 +63,9 @@ app = FastAPI(
         "1. `POST /setup/init-db` (se ejecuta solo al arrancar).\n"
         "2. `POST /setup/seed-catalogos`.\n"
         "3. `POST /setup/seed-empleados?cantidad=20`.\n"
-        "4. Usar los CRUD de departamentos, herramientas y empleados.\n"
-        "5. `POST /prestamos` para prestar/devolver herramientas.\n"
+        "4. `POST /setup/seed-prestamos?cantidad=5` (préstamos de ejemplo).\n"
+        "5. Usar los CRUD de departamentos, herramientas y empleados.\n"
+        "6. `POST /prestamos` para prestar/devolver herramientas.\n"
     ),
     version="2.0",
 )
@@ -87,6 +88,7 @@ def root():
             "POST /setup/init-db            (crea BD y tablas)",
             "POST /setup/seed-catalogos     (carga departamentos y herramientas)",
             "POST /setup/seed-empleados?cantidad=20  (carga 20 empleados)",
+            "POST /setup/seed-prestamos?cantidad=5   (carga préstamos de ejemplo)",
             "CRUD /departamentos, /herramientas, /empleados",
             "POST /prestamos  →  prestar/devolver herramientas",
         ],

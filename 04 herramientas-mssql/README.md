@@ -46,7 +46,7 @@ DEPARTAMENTO 1 ─── N EMPLEADO N ─── M HERRAMIENTA
 ## ¿Qué hace el servicio?
 
 1. **Setup** — crea la base de datos y las tablas base si no existen, y carga
-   datos iniciales (catálogos estáticos + empleados dinámicos).
+   datos iniciales (catálogos estáticos + empleados dinámicos + préstamos dinámicos).
 2. **CRUD Departamento** — crear, listar, obtener, actualizar, eliminar.
 3. **CRUD Herramienta** — crear, listar (con estado de préstamo), obtener,
    actualizar, eliminar.
@@ -62,9 +62,9 @@ app/
   config.py        → conexión (variables de entorno)
   database.py      → init_db(), get_db(), helpers de filas + esquema DDL
   schemas.py       → modelos Pydantic (validación + Swagger)
-  seeders.py       → catálogos estáticos + seeder dinámico de empleados
+  seeders.py       → catálogos estáticos + seeders dinámicos (empleados y préstamos)
   routers/
-    setup.py           → 1) init-db  2) seed-catalogos  3) seed-empleados
+    setup.py           → 1) init-db  2) seed-catalogos  3) seed-empleados  4) seed-prestamos
     departamentos.py   → CRUD
     herramientas.py    → CRUD
     empleados.py       → CRUD
@@ -95,6 +95,8 @@ app/
      al arrancar).
    - `POST /setup/seed-catalogos` → carga departamentos y herramientas.
    - `POST /setup/seed-empleados?cantidad=20` → carga 20 empleados.
+   - `POST /setup/seed-prestamos?cantidad=5` → carga préstamos de ejemplo
+     (activos e históricos) para ver la relación N:M.
    - Usar los CRUD de `/departamentos`, `/herramientas`, `/empleados`.
    - `POST /prestamos` → prestar y devolver herramientas.
 
