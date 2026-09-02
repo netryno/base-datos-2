@@ -90,7 +90,7 @@ GO
 
 EXECUTE AS LOGIN = 'admin_bd';
     SELECT SUSER_NAME() AS login_conectado,      -- debe decir: admin_bd
-           USER_NAME()  AS user_en_esta_bd;      -- en master puede salir vacío/guest: normal
+           USER_NAME()  AS user_en_esta_bd;       -- en master puede salir vacío/guest: normal
 REVERT;
 GO
 
@@ -138,7 +138,7 @@ GO
 Server name:      localhost,1433
 Authentication:   SQL Server Authentication
 Login:            lector_herramientas
-Password:         Herram#2026
+Password:         SoloTools#2026
 ☑ Trust server certificate
 
 

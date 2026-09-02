@@ -1,13 +1,10 @@
-
-USE bd_herramientas;
-GO
 /*===========================================================================
   3) TRIGGER: trg_empleado_nombre_editado
   ---------------------------------------------------------------------------
   AFTER INSERT sobre dbo.empleados: añade automáticamente el sufijo
   '_editado_trigger' al nombre de cada nuevo empleado.
 
-  Se usa UPDATE sobre la tabla inserted mediante un JOIN a la tabla real,
+  Se usa UPDATE sobre la tabla real mediante un JOIN a la tabla inserted,
   actualizando solo las filas recién insertadas (evita recursividad).
 ===========================================================================*/
 IF OBJECT_ID('dbo.trg_empleado_nombre_editado', 'TR') IS NOT NULL
@@ -39,6 +36,9 @@ GO
   Permite insertar un nuevo empleado. Al hacerlo, el trigger anterior
   modificará automáticamente el nombre añadiendo '_editado_trigger'.
   Devuelve el ID generado y el nombre final (ya editado por el trigger).
+
+  NOTA: PRINT solo admite expresiones escalares; por eso guardamos los
+  valores en variables (@IdGenerado, @NombreFinal) ANTES de imprimirlos.
 ===========================================================================*/
 IF OBJECT_ID('dbo.sp_insertar_empleado', 'P') IS NOT NULL
     DROP PROCEDURE dbo.sp_insertar_empleado;
@@ -52,7 +52,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    DECLARE @NuevoID TABLE (empleado_id INT, empleado_nombre VARCHAR(72));
+    DECLARE @NuevoID TABLE (empleado_id INT);
 
     BEGIN TRY
         BEGIN TRANSACTION;
@@ -64,27 +64,31 @@ BEGIN
         END
 
         INSERT INTO dbo.empleados (empleado_nombre, puesto, departamento_id)
-        OUTPUT INSERTED.empleado_id, INSERTED.empleado_nombre
-            INTO @NuevoID (empleado_id, empleado_nombre)
+        OUTPUT INSERTED.empleado_id INTO @NuevoID (empleado_id)
         VALUES (@empleado_nombre, @puesto, @departamento_id);
 
         COMMIT TRANSACTION;
 
-        -- El trigger ya modificó el nombre; lo releemos para mostrar el final
+        -- Variables escalares (PRINT no admite subconsultas)
+        DECLARE @IdGenerado  INT          = (SELECT empleado_id FROM @NuevoID);
+        DECLARE @NombreFinal VARCHAR(72);
+
+        SELECT @NombreFinal = empleado_nombre
+        FROM   dbo.empleados
+        WHERE  empleado_id = @IdGenerado;
+
+        -- Devolver el registro final (nombre ya editado por el trigger)
         SELECT  e.empleado_id,
                 e.empleado_nombre AS nombre_final_editado,
                 e.puesto,
                 e.departamento_id
         FROM    dbo.empleados AS e
-        WHERE   e.empleado_id = (SELECT empleado_id FROM @NuevoID);
+        WHERE   e.empleado_id = @IdGenerado;
 
         PRINT '==========================================================';
         PRINT '  EMPLEADO REGISTRADO (nombre editado por trigger)';
-        PRINT '  ID            : '
-              + CAST((SELECT empleado_id FROM @NuevoID) AS VARCHAR(10));
-        PRINT '  Nombre final : '
-              + (SELECT empleado_nombre FROM dbo.empleados
-                WHERE empleado_id = (SELECT empleado_id FROM @NuevoID));
+        PRINT '  ID           : ' + CAST(@IdGenerado AS VARCHAR(10));
+        PRINT '  Nombre final : ' + @NombreFinal;
         PRINT '==========================================================';
     END TRY
     BEGIN CATCH
@@ -100,8 +104,30 @@ END;
 GO
 
 
+/*===========================================================================
+  PRUEBAS
+  ---------------------------------------------------------------------------
+  Bloque de prueba ejecutable. Pre-condición: deben existir al menos un
+  departamento y una herramienta en la BD. Si no existen, se crean datos de
+  ejemplo al inicio. Luego se prueba: el trigger (vía sp_insertar_empleado),
+  el procedimiento de préstamo y la función.
+===========================================================================*/
 
+-- 0) Datos de apoyo (solo si no existen aún) -------------------------------
+IF NOT EXISTS (SELECT 1 FROM dbo.departamentos)
+BEGIN
+    INSERT INTO dbo.departamentos (departamento_codigo, departamento_nombre)
+    VALUES ('D01', 'Mantenimiento');
+END
+GO
 
+IF NOT EXISTS (SELECT 1 FROM dbo.herramientas)
+BEGIN
+    INSERT INTO dbo.herramientas (codigo_inventario, nombre, estado)
+    VALUES ('H-001', 'Taladro', 'nuevo'),
+           ('H-002', 'Llave inglesa', 'usado');
+END
+GO
 
 -- 1) Probar el TRIGGER: insertar un empleado (el trigger añade el sufijo) -
 PRINT '>>> PRUEBA TRIGGER: insertando empleado...';
