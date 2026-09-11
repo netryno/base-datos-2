@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: tutorial-api-postgresql
+    ports:
+      - "${API_HOST_PORT}:8000"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/__pycache__
+    networks:
+      - postgres
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+# Red del docker-compose de PostgreSQL + pgAdmin (contenedor my-database).
+networks:
+  postgres:
+    external: true
+    name: ${DOCKER_POSTGRES_NETWORK}

@@ -1,0 +1,5 @@
+fastapi==0.141.1
+uvicorn==0.52.4
+psycopg2-binary==2.9.11
+openpyxl==3.1.5
+python-multipart==0.0.20

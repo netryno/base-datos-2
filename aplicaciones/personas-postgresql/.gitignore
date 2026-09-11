@@ -1,0 +1,7 @@
+# Variables de entorno locales (usar .env.example como plantilla)
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
