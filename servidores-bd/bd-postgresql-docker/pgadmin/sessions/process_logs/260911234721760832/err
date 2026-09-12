@@ -1,0 +1,48 @@
+260911234722136249,pg_restore: connecting to database for restore
+
+260911234722150051,pg_restore: executing SELECT pg_catalog.set_config('search_path', '', false);
+
+260911234722156008,pg_restore: creating TABLE "public.paises"
+
+260911234722201547,pg_restore: creating TABLE "public.personas"
+
+260911234722211369,pg_restore: creating SEQUENCE "public.personas_persona_id_seq"
+
+260911234722232389,pg_restore: creating SEQUENCE OWNED BY "public.personas_persona_id_seq"
+
+260911234722235184,pg_restore: creating TABLE "public.viajes"
+
+260911234722242958,pg_restore: creating SEQUENCE "public.viajes_viaje_id_seq"
+
+260911234722251545,pg_restore: creating SEQUENCE OWNED BY "public.viajes_viaje_id_seq"
+
+260911234722256336,pg_restore: creating DEFAULT "public.personas persona_id"
+
+260911234722268903,pg_restore: creating DEFAULT "public.viajes viaje_id"
+
+260911234722272312,pg_restore: processing data for table "public.paises"
+
+260911234722277457,pg_restore: processing data for table "public.personas"
+
+260911234722282079,pg_restore: processing data for table "public.viajes"
+
+260911234722285529,pg_restore: executing SEQUENCE SET personas_persona_id_seq
+
+260911234722290380,pg_restore: executing SEQUENCE SET viajes_viaje_id_seq
+
+260911234722294034,pg_restore: creating CONSTRAINT "public.paises paises_pkey"
+
+260911234722310184,pg_restore: creating CONSTRAINT "public.personas personas_ci_key"
+
+260911234722324067,pg_restore: creating CONSTRAINT "public.personas personas_pkey"
+
+260911234722339352,pg_restore: creating CONSTRAINT "public.viajes viajes_pkey"
+
+260911234722358627,pg_restore: creating INDEX "public.idx_viajes_pais"
+
+260911234722371949,pg_restore: creating INDEX "public.idx_viajes_persona"
+
+260911234722386467,pg_restore: creating FK CONSTRAINT "public.viajes viajes_pais_id_fkey"
+
+260911234722420112,pg_restore: creating FK CONSTRAINT "public.viajes viajes_persona_id_fkey"
+

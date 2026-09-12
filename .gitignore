@@ -1,0 +1,62 @@
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editores / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+
+# Entornos
+.env
+.env.*
+
+# Docker / contenedores
+.docker/
+
+# Logs y temporales
+*.log
+*.tmp
+*.temp
+*.pid
+
+# Bases de datos locales y backups generados
+*.db
+*.sqlite3
+*.bak
+*.mdf
+*.ldf
+*.bakup
+*.dump
+*.sql~
+
+# Directorios de datos locales del proyecto
+**/data/
+**/backups/
+**/postgres/
+**/sqlserver_data/
+**/sqlserver_backups/
+**/tmp/
+**/cache/
+
+# Archivos de sistema
+._*
+
+# Jupyter
+.ipynb_checkpoints/
