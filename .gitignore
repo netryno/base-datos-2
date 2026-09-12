@@ -50,6 +50,7 @@ env/
 **/data/
 **/backups/
 **/postgres/
+**/pgadmin/
 **/sqlserver_data/
 **/sqlserver_backups/
 **/tmp/

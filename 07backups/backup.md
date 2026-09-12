@@ -21,13 +21,7 @@ crontab -e
 # ------------------------------------------------------------------------------
 # TAREA 2: Respaldo cada minuto 
 # ------------------------------------------------------------------------------
-
 ## 1. Para probarlo cada minuto:
-#### * * * * * /ruta/absoluta/a/tu/proyecto/backup.sh >> /ruta/absoluta/a/tu/proyecto/backup.log 2>&1
-
-## cada minuto
-* * * * * /Volumes/orico/desarrollo/cato/base-datos-2/07backups/backup.sh >> /Volumes/orico/desarrollo/cato/base-datos-2/07backups/copias/backup.log 2>&1
-
 
 
 ## 2. Para ejecutarlo cada medianoche (00:00):
