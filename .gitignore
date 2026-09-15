@@ -61,3 +61,6 @@ env/
 
 # Jupyter
 .ipynb_checkpoints/
+
+# Mongo local DB data
+/servidores-bd/bd-mongo/mongo_data/
