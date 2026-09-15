@@ -1,0 +1,25 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: mongo-d
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=123456
+      # Opcional: puedes crear una base de datos inicial
+      - MONGO_INITDB_DATABASE=mi_basededatos 
+    volumes:
+      - ./mongo_data:/data/db
+
+  compooss:
+    image: abdullahmia/compooss:latest
+    container_name: compooss-ui
+    ports:
+      - "8081:3000"
+    depends_on:
+      - mongo
+    environment:
+      # Como compooss depende de mongo, aquí le pasamos la URL de conexión
+      # con el usuario y clave que acabamos de crear
+      - MONGO_URL=mongodb://admin:123456@mongo:27017
