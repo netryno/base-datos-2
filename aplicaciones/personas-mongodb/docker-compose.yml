@@ -8,6 +8,8 @@ services:
       - "${API_HOST_PORT}:8000"
     env_file:
       - .env
+    environment:
+      MONGO_URI: mongodb://admin:123456@mongo:27017
     volumes:
       - .:/app
       - /app/__pycache__

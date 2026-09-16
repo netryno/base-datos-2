@@ -4,8 +4,11 @@ Inicialización de MongoDB (BD + colecciones + índices + semilla) al arrancar l
 import os
 import time
 
+from dotenv import load_dotenv
 from pymongo import ASCENDING, MongoClient, ReturnDocument
 from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
+
+load_dotenv()
 
 
 def _require_env(name: str) -> str:
@@ -18,10 +21,7 @@ def _require_env(name: str) -> str:
     return value
 
 
-MONGO_HOST = os.getenv("MONGO_HOST", "localhost")
-MONGO_PORT = int(os.getenv("MONGO_PORT", "27017"))
-MONGO_USER = _require_env("MONGO_USER")
-MONGO_PASSWORD = _require_env("MONGO_PASSWORD")
+MONGO_URI = _require_env("MONGO_URI")
 MONGO_AUTH_SOURCE = os.getenv("MONGO_AUTH_SOURCE", "admin")
 DB_NAME = _require_env("DB_NAME")
 
@@ -29,10 +29,8 @@ _client: MongoClient | None = None
 
 
 def _mongo_uri() -> str:
-    return (
-        f"mongodb://{MONGO_USER}:{MONGO_PASSWORD}@"
-        f"{MONGO_HOST}:{MONGO_PORT}/?authSource={MONGO_AUTH_SOURCE}"
-    )
+    separator = "&" if "?" in MONGO_URI else "?"
+    return f"{MONGO_URI}{separator}authSource={MONGO_AUTH_SOURCE}"
 
 
 def get_client() -> MongoClient:
@@ -51,17 +49,14 @@ def wait_for_server(max_attempts: int = 30, delay_seconds: float = 2.0) -> None:
     for attempt in range(1, max_attempts + 1):
         try:
             get_client().admin.command("ping")
-            print(
-                f"[db] Servidor MongoDB disponible en "
-                f"{MONGO_HOST}:{MONGO_PORT} (intento {attempt})."
-            )
+            print(f"[db] Servidor MongoDB disponible (intento {attempt}).")
             return
         except ServerSelectionTimeoutError as exc:
             last_error = exc
             print(f"[db] Esperando MongoDB... ({attempt}/{max_attempts})")
             time.sleep(delay_seconds)
     raise RuntimeError(
-        f"No se pudo conectar a MongoDB en {MONGO_HOST}:{MONGO_PORT}"
+        "No se pudo conectar a MongoDB usando MONGO_URI"
     ) from last_error
 
 
