@@ -9,7 +9,9 @@ services:
     env_file:
       - .env
     environment:
-      MONGO_URI: mongodb://admin:123456@mongo:27017
+      MONGO_URI: ${MONGO_URI}
+      MONGO_AUTH_SOURCE: ${MONGO_AUTH_SOURCE}
+      DB_NAME: ${DB_NAME}
     volumes:
       - .:/app
       - /app/__pycache__
