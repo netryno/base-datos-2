@@ -240,13 +240,40 @@ Explicar en clase: cuando pones varios campos separados por coma dentro de un mi
 
 ### Nivel avanzado (pero comprensible) — pipeline de agregación
 
+
+En lugar de traer todos los documentos a tu aplicación y procesarlos manualmente, le das a MongoDB una lista de documentos y los haces pasar por una serie de etapas de procesamiento. Cada etapa recibe los datos, los transforma, los filtra o los agrupa, y le pasa el resultado a la siguiente etapa.
+
+```js
+[Documentos en la DB] ➔ [Etapa 1: Filtrar] ➔ [Etapa 2: Agrupar] ➔ [Etapa 3: Ordenar] ➔ [Resultado Final]
+```
+
+#### Las etapas principales (Los bloques de construcción)
+Cada etapa empieza con el signo $ y realiza una tarea específica:
+
+| Etapa | ¿Qué hace? | Equivalente en SQL / Concepto |
+| :--- | :--- | :--- |
+| **`$match`** | Filtra los documentos para quedarse solo con los que cumplen una condición. | `WHERE` |
+| **`$group`** | Junta varios documentos por un campo común y calcula totales, promedios, etc. | `GROUP BY` y funciones como `SUM()`, `AVG()` |
+| **`$project`** | Selecciona, renombra o crea campos nuevos en los documentos. | `SELECT` |
+| **`$sort`** | Ordena los resultados de mayor a menor o viceversa. | `ORDER BY` |
+| **`$limit`** | Limita la cantidad de resultados devueltos. | `LIMIT` |
+| **`$lookup`** | Une datos de otra colección (hace un "join"). | `JOIN` |
+
 La agregación es una **secuencia de pasos** (`$match` filtra, `$group` agrupa, `$sort` ordena, `$project` elige campos). Se explica como una tubería: cada etapa recibe la salida de la anterior.
 
 ```js
 // Cantidad de libros disponibles por género, ordenado de mayor a menor
 db.libros.aggregate([
+  //Paso 1: filtrar
   { $match: { disponible: true } },
-  { $group: { _id: "$genero", total: { $sum: 1 } } },
+
+  //paso 2: agrupar
+  { $group: { 
+    _id: "$genero", //agrupa por id
+    total: { $sum: 1 } } //suma cuantas hubo
+  },
+
+  //paso 3: oderna por total, descendente -1
   { $sort: { total: -1 } }
 ])
 ```
@@ -255,16 +282,33 @@ db.libros.aggregate([
 // $lookup: traer, para cada préstamo, los datos del libro relacionado (equivalente a un JOIN)
 db.prestamos.aggregate([
   {
+
     $lookup: {
+      // 1. Colección de origen con la que se quiere cruzar/unir los datos
       from: "libros",
+
+      // 2. Campo dentro de la colección actual ('prestamos') que se usará para buscar la coincidencia
       localField: "libro",
+
+      // 3. Campo en la colección destino ('libros') que debe coincidir exactamente con 'localField'
       foreignField: "titulo",
+
+      // 4. Nombre del nuevo campo que se añadirá a cada documento con los resultados encontrados (en formato Array)
       as: "info_libro"
     }
   }
 ])
 ```
 Este último es el mejor momento para conectar con lo que ya saben de SQL: `$lookup` es, conceptualmente, un `LEFT JOIN`.
+
+
+  #### PASO A PASO DE CÓMO FUNCIONA INTERNAMENTE:
+   ---------------------------------------------------------------------------------------------------
+   1. MongoDB toma cada documento guardado en la colección "prestamos".
+   2. Extrae el valor presente en el campo "libro" (por ejemplo: "Cien años de soledad").
+   3. Va a la colección "libros" y busca todos los documentos cuyo campo "titulo" sea exactamente igual a "Cien años de soledad".
+   4. Toma la información del libro encontrado y la guarda en una lista/array llamada "info_libro" 
+      dentro del documento del préstamo.
 
 ---
 
