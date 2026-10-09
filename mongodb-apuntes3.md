@@ -240,6 +240,14 @@ Explicar en clase: cuando pones varios campos separados por coma dentro de un mi
 
 ### Nivel avanzado (pero comprensible) — pipeline de agregación
 
+#### navicat para trabajar o Studio 3T
+
+google: navicat primium lite
+- descargar instalador (win, lin, mac)
+- instalar 
+- crearse cuenta, y login
+- Conectarse al  mongo del docker , (a mongo atlas tambine)
+mongodb://admin:123456@localhost:27017
 
 En lugar de traer todos los documentos a tu aplicación y procesarlos manualmente, le das a MongoDB una lista de documentos y los haces pasar por una serie de etapas de procesamiento. Cada etapa recibe los datos, los transforma, los filtra o los agrupa, y le pasa el resultado a la siguiente etapa.
 
@@ -328,6 +336,18 @@ db.createUser({
   pwd: "ClaveSegura123",
   roles: [ { role: "userAdmin", db: "admin" }, { role: "readWrite", db: "biblioteca" } ]
 })
+```
+
+### Contectarse con dicho usuario
+```js
+//uri: (para table plus, navicat, Studio 3T)
+mongodb://admin_bd2:ClaveSegura123@localhost:27017
+
+//para ssh: (via contenedor)
+docker exec -it mongo-d mongosh -u admin_bd2 -p ClaveSegura123 --authenticationDatabase admin
+
+//para ssh directo en local
+mongosh "mongodb://127.0.0.1:27017"  -u admin_bd2 -p ClaveSegura123 --authenticationDatabase admin
 ```
 
 Crear un usuario con acceso limitado, solo a la base `biblioteca`:
