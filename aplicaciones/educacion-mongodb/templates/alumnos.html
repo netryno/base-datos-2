@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block titulo %}Alumnos{% endblock %}
+
+{% block contenido %}
+<h1>Alumnos</h1>
+
+<section class="columnas">
+  <article class="panel">
+    <h2>Registrar alumno</h2>
+    <form method="post" action="{{ url_for('registrar_alumno') }}">
+      <label>DNI <input name="dni" required maxlength="20"></label>
+      <label>Nombre completo <input name="nombre" required maxlength="80"></label>
+      <label>Edad <input name="edad" type="number" min="1" max="120" required></label>
+      <button type="submit">Registrar</button>
+    </form>
+    <p class="nota">Equivale a <code>db.alumno.insertOne({dni, nombre, edad})</code>.</p>
+  </article>
+
+  <article>
+    <h2>Listado <small>({{ alumnos | length }})</small></h2>
+    {% if alumnos %}
+    <table>
+      <thead><tr><th>DNI</th><th>Nombre</th><th>Edad</th><th>_id</th></tr></thead>
+      <tbody>
+        {% for a in alumnos %}
+        <tr>
+          <td>{{ a.dni }}</td>
+          <td>{{ a.nombre }}</td>
+          <td>{{ a.edad }}</td>
+          <td><code class="oid">{{ a._id }}</code></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="vacio">Aún no hay alumnos registrados.</p>
+    {% endif %}
+  </article>
+</section>
+{% endblock %}

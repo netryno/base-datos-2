@@ -1,0 +1,92 @@
+/* Estilo sobrio, orientado a uso académico. */
+
+:root {
+  --tinta: #1f2933;
+  --gris: #6b7280;
+  --linea: #d9dee3;
+  --fondo: #f6f7f9;
+  --panel: #ffffff;
+  --acento: #1e3a5f;
+  --ok: #1b6e3a;
+  --error: #9b1c1c;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font: 15px/1.5 Georgia, "Times New Roman", serif;
+  color: var(--tinta);
+  background: var(--fondo);
+}
+
+.contenedor { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+/* Cabecera y menú */
+.cabecera { background: var(--acento); color: #fff; }
+.cabecera .contenedor { display: flex; align-items: center; justify-content: space-between; height: 56px; }
+.marca { font-weight: bold; letter-spacing: .3px; }
+.marca small { font-weight: normal; opacity: .75; margin-left: 10px; font-size: 12px; }
+nav a { color: #fff; text-decoration: none; padding: 18px 14px; display: inline-block; opacity: .8; border-bottom: 3px solid transparent; }
+nav a:hover, nav a.activo { opacity: 1; border-bottom-color: #fff; }
+
+main { padding: 28px 24px 40px; }
+
+h1 { font-size: 24px; font-weight: normal; margin: 0 0 20px; border-bottom: 1px solid var(--linea); padding-bottom: 8px; }
+h2 { font-size: 17px; margin: 0 0 12px; }
+h2 small { color: var(--gris); font-weight: normal; }
+
+/* Disposición */
+.columnas { display: grid; grid-template-columns: 340px 1fr; gap: 28px; align-items: start; }
+@media (max-width: 800px) { .columnas { grid-template-columns: 1fr; } }
+
+.panel { background: var(--panel); border: 1px solid var(--linea); padding: 18px 20px; }
+
+.tarjetas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+.tarjeta { background: var(--panel); border: 1px solid var(--linea); padding: 14px 18px; }
+.cifra { display: block; font-size: 30px; }
+.etiqueta { color: var(--gris); font-size: 13px; }
+
+/* Formularios */
+form label { display: block; margin-bottom: 12px; font-size: 13px; color: var(--gris); }
+input, select, textarea {
+  display: block; width: 100%; margin-top: 4px; padding: 7px 9px;
+  font: inherit; font-size: 14px; color: var(--tinta);
+  border: 1px solid var(--linea); background: #fff;
+}
+input:focus, select:focus, textarea:focus { outline: 1px solid var(--acento); border-color: var(--acento); }
+.fila { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+fieldset { border: 1px solid var(--linea); padding: 8px 12px 0; margin: 0 0 12px; }
+legend { font-size: 12px; color: var(--gris); padding: 0 6px; }
+
+button {
+  font: inherit; font-size: 14px; padding: 8px 18px; cursor: pointer;
+  background: var(--acento); color: #fff; border: 1px solid var(--acento);
+}
+button:hover { background: #162c48; }
+button.enlace { background: none; border: none; color: var(--error); padding: 0; font-size: 13px; text-decoration: underline; }
+
+.selector { max-width: 520px; margin-bottom: 24px; }
+
+/* Tablas */
+table { width: 100%; border-collapse: collapse; background: var(--panel); font-size: 14px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--linea); vertical-align: top; }
+th { font-weight: normal; color: var(--gris); font-size: 12px; text-transform: uppercase; letter-spacing: .4px; background: #fafbfc; }
+td.centro, th.centro { text-align: center; }
+table.compacta td { padding: 6px 10px; }
+
+/* Texto auxiliar */
+code { font: 13px/1.4 "SF Mono", Menlo, Consolas, monospace; background: #eef1f4; padding: 1px 5px; }
+code.oid { font-size: 12px; color: var(--gris); background: none; padding: 0; }
+pre { background: #eef1f4; padding: 12px 14px; font: 13px/1.5 "SF Mono", Menlo, Consolas, monospace; overflow-x: auto; margin: 0; }
+.nota { font-size: 13px; color: var(--gris); margin: 14px 0 0; }
+.gris { color: var(--gris); }
+.vacio { color: var(--gris); font-style: italic; }
+a { color: var(--acento); }
+
+/* Mensajes */
+.aviso { padding: 10px 14px; margin: 0 0 18px; border-left: 4px solid; background: var(--panel); }
+.aviso.ok { border-color: var(--ok); color: var(--ok); }
+.aviso.error { border-color: var(--error); color: var(--error); }
+
+.pie { color: var(--gris); font-size: 12px; padding-bottom: 24px; border-top: 1px solid var(--linea); padding-top: 12px; }

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block titulo %}Asignaturas{% endblock %}
+
+{% block contenido %}
+<h1>Asignaturas</h1>
+
+<section class="columnas">
+  <article class="panel">
+    <h2>Registrar asignatura</h2>
+    <form method="post" action="{{ url_for('registrar_asignatura') }}">
+      <div class="fila">
+        <label>Gestión <input name="gestion" required placeholder="2026" maxlength="10"></label>
+        <label>Código <input name="codigo" required placeholder="BD2" maxlength="15"></label>
+      </div>
+      <label>Nombre <input name="nombre" required maxlength="100"></label>
+      <label>Descripción <textarea name="descripcion" rows="2" maxlength="300"></textarea></label>
+
+      <fieldset>
+        <legend>Profesor (documento embebido)</legend>
+        <label>DNI <input name="profesor_dni" required maxlength="20"></label>
+        <label>Nombre <input name="profesor_nombre" required maxlength="80"></label>
+        <label>Especialidad <input name="profesor_especialidad" maxlength="80"></label>
+      </fieldset>
+
+      <button type="submit">Registrar</button>
+    </form>
+    <p class="nota">Equivale a <code>db.asignatura.insertOne({..., profesor: {...}, inscritos: []})</code>.</p>
+  </article>
+
+  <article>
+    <h2>Listado <small>({{ asignaturas | length }})</small></h2>
+    {% if asignaturas %}
+    <table>
+      <thead>
+        <tr><th>Gestión</th><th>Código</th><th>Nombre</th><th>Profesor</th><th>Inscritos</th></tr>
+      </thead>
+      <tbody>
+        {% for s in asignaturas %}
+        <tr>
+          <td>{{ s.gestion }}</td>
+          <td>{{ s.codigo }}</td>
+          <td>
+            {{ s.nombre }}
+            {% if s.descripcion %}<br><small class="gris">{{ s.descripcion }}</small>{% endif %}
+          </td>
+          <td>
+            {{ s.profesor.nombre }}
+            {% if s.profesor.especialidad %}<br><small class="gris">{{ s.profesor.especialidad }}</small>{% endif %}
+          </td>
+          <td class="centro">
+            <a href="{{ url_for('matricula', asignatura_id=s._id) }}">{{ s.inscritos | length }}</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="vacio">Aún no hay asignaturas registradas.</p>
+    {% endif %}
+  </article>
+</section>
+{% endblock %}

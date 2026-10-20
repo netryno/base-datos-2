@@ -1,0 +1,420 @@
+{
+  "modelName": "New Model",
+  "collections": [
+    {
+      "collectionName": "alumno",
+      "type": "object",
+      "properties": [
+        {
+          "name": "dni",
+          "hackoladeMeta": {},
+          "isActivated": true,
+          "type": "objectId",
+          "GUID": "dd493d99-65dc-44bd-baba-f8458ed9b760",
+          "primaryKey": false,
+          "error": {}
+        },
+        {
+          "name": "nombre",
+          "hackoladeMeta": {},
+          "isActivated": true,
+          "type": "string",
+          "GUID": "c9bb296c-5e1b-4ed2-a1b4-6eda1a681b23",
+          "error": {
+            "name": false,
+            "code": false
+          }
+        },
+        {
+          "name": "edad",
+          "hackoladeMeta": {},
+          "isActivated": true,
+          "type": "string",
+          "GUID": "446359d9-4eb9-42ee-8f51-e9d92181ea20",
+          "error": {
+            "name": false,
+            "code": false
+          }
+        },
+        {
+          "name": "_id",
+          "hackoladeMeta": {},
+          "isActivated": true,
+          "type": "objectId",
+          "GUID": "7fea43c8-1ed3-4a1c-98ff-4f29630e4d4f",
+          "primaryKey": true,
+          "error": {},
+          "childRelationships": [
+            "b9c3312b-2610-4a5e-8cc8-d5d7b377dd82"
+          ]
+        }
+      ],
+      "definitions": {
+        "type": "definitions",
+        "properties": [],
+        "GUID": "6edd8908-043f-489d-b7fb-494690451937"
+      },
+      "isActivated": true,
+      "additionalProperties": false,
+      "validationLevel": "Off",
+      "validationAction": "Warn",
+      "storageEngineName": "WiredTiger",
+      "sharding": {
+        "unique": true,
+        "collation": "null"
+      },
+      "GUID": "8ca4f254-867d-4b49-97b6-224d0fb2dad5",
+      "bucketId": "48986881-0110-40fa-9067-7f1ce3cb21ed",
+      "hackoladeMeta": {
+        "validationErrors": {}
+      }
+    },
+    {
+      "collectionName": "asignatura",
+      "type": "object",
+      "properties": [
+        {
+          "hackoladeMeta": {},
+          "isActivated": true,
+          "type": "objectId",
+          "GUID": "2b1b13db-bcc0-4a6f-9d74-d4dc86c68657",
+          "primaryKey": true,
+          "name": "_id",
+          "error": {}
+        },
+        {
+          "name": "gestion",
+          "hackoladeMeta": {},
+          "isActivated": true,
+          "type": "string",
+          "GUID": "fd9d1130-63cd-48fe-93c8-d4c8f0d4d91e",
+          "error": {
+            "name": false,
+            "code": false
+          }
+        },
+        {
+          "name": "codigo",
+          "hackoladeMeta": {},
+          "isActivated": true,
+          "type": "string",
+          "GUID": "26870c61-6fed-4d86-9ed6-70f3223cf684",
+          "error": {}
+        },
+        {
+          "name": "nombre",
+          "hackoladeMeta": {},
+          "isActivated": true,
+          "type": "string",
+          "GUID": "a16df297-74dc-46ec-a13e-6caf0b111e9c",
+          "error": {
+            "name": false,
+            "code": false
+          }
+        },
+        {
+          "hackoladeMeta": {},
+          "isActivated": true,
+          "type": "string",
+          "GUID": "12962bbe-da49-4fb0-b2ff-31dbc311546b",
+          "name": "descripcion",
+          "error": {}
+        },
+        {
+          "name": "profesor",
+          "hackoladeMeta": {},
+          "isActivated": true,
+          "type": "document",
+          "properties": [
+            {
+              "name": "dni",
+              "hackoladeMeta": {},
+              "isActivated": true,
+              "type": "objectId",
+              "GUID": "6fe2d080-fe6a-461f-adbf-f471fb74e236",
+              "primaryKey": false,
+              "error": {}
+            },
+            {
+              "name": "nombre",
+              "hackoladeMeta": {},
+              "isActivated": true,
+              "type": "string",
+              "GUID": "967a32d4-c263-41b4-b8ee-653cb1ee290d",
+              "error": {}
+            },
+            {
+              "name": "especialidad",
+              "hackoladeMeta": {},
+              "isActivated": true,
+              "type": "string",
+              "GUID": "94788f7f-6302-4a7a-a68e-24c813fc5b5b",
+              "error": {}
+            }
+          ],
+          "additionalProperties": false,
+          "error": {},
+          "GUID": "16b6cd7a-404c-4f4f-a115-b6c7a4700a29"
+        },
+        {
+          "name": "inscritos",
+          "hackoladeMeta": {},
+          "isActivated": true,
+          "type": "array",
+          "properties": [
+            {
+              "hackoladeMeta": {},
+              "isActivated": true,
+              "type": "document",
+              "properties": [
+                {
+                  "name": "alumno_id",
+                  "hackoladeMeta": {},
+                  "isActivated": true,
+                  "type": "objectId",
+                  "GUID": "62a22903-39da-4f09-b828-f8d6fea195da",
+                  "foreignCollection": "8ca4f254-867d-4b49-97b6-224d0fb2dad5",
+                  "foreignField": [
+                    "8ca4f254-867d-4b49-97b6-224d0fb2dad5",
+                    "7fea43c8-1ed3-4a1c-98ff-4f29630e4d4f"
+                  ],
+                  "relationshipType": "Foreign Key",
+                  "parentRelationship": "b9c3312b-2610-4a5e-8cc8-d5d7b377dd82",
+                  "error": {}
+                },
+                {
+                  "name": "fecha_inscripcion",
+                  "hackoladeMeta": {},
+                  "isActivated": true,
+                  "type": "date",
+                  "primaryKey": false,
+                  "error": {},
+                  "GUID": "a6f5d52a-894d-4cb0-97d5-c82adeb75a0e"
+                }
+              ],
+              "additionalProperties": false,
+              "error": {},
+              "GUID": "54ec5d97-cb55-44d5-8948-6fabc81e8b39",
+              "arrayItem": true
+            }
+          ],
+          "additionalItems": true,
+          "error": {},
+          "GUID": "f71e41e1-9eb9-42fe-8c15-11f5fadab0e0"
+        }
+      ],
+      "definitions": {
+        "type": "definitions",
+        "properties": [],
+        "GUID": "af4eb4f1-010d-4681-a281-cc1e9c01e406"
+      },
+      "isActivated": true,
+      "additionalProperties": false,
+      "validationLevel": "Off",
+      "validationAction": "Warn",
+      "storageEngineName": "WiredTiger",
+      "sharding": {
+        "unique": true,
+        "collation": "null"
+      },
+      "GUID": "c332b8e1-f3f6-40f7-bc48-b14da2b1d250",
+      "bucketId": "48986881-0110-40fa-9067-7f1ce3cb21ed",
+      "hackoladeMeta": {
+        "validationErrors": {}
+      }
+    }
+  ],
+  "buckets": [
+    {
+      "name": "bd-educacion",
+      "type": "bucket",
+      "collectionIds": [
+        "8ca4f254-867d-4b49-97b6-224d0fb2dad5",
+        "c332b8e1-f3f6-40f7-bc48-b14da2b1d250"
+      ],
+      "backgroundColor": {
+        "r": 129,
+        "g": 212,
+        "b": 250,
+        "a": 1
+      },
+      "show": true,
+      "isActivated": true,
+      "GUID": "48986881-0110-40fa-9067-7f1ce3cb21ed",
+      "hackoladeMeta": {
+        "validationErrors": {}
+      }
+    }
+  ],
+  "views": [],
+  "relationships": [
+    {
+      "name": "fk_alumno.dni_to_asignatura.inscritos.[0].alumno_dni",
+      "relationshipType": "Foreign Key",
+      "parentField": [
+        [
+          "8ca4f254-867d-4b49-97b6-224d0fb2dad5",
+          "7fea43c8-1ed3-4a1c-98ff-4f29630e4d4f"
+        ]
+      ],
+      "parentCardinality": "1",
+      "childField": [
+        [
+          "c332b8e1-f3f6-40f7-bc48-b14da2b1d250",
+          "f71e41e1-9eb9-42fe-8c15-11f5fadab0e0",
+          "54ec5d97-cb55-44d5-8948-6fabc81e8b39",
+          "62a22903-39da-4f09-b828-f8d6fea195da"
+        ]
+      ],
+      "isActivated": true,
+      "childCardinality": "1",
+      "GUID": "b9c3312b-2610-4a5e-8cc8-d5d7b377dd82",
+      "parentCollection": "8ca4f254-867d-4b49-97b6-224d0fb2dad5",
+      "childCollection": "c332b8e1-f3f6-40f7-bc48-b14da2b1d250",
+      "hackoladeStyles": {
+        "GUID": "c3325a44-9352-471f-986c-58a74a08c921",
+        "autoPositioning": false,
+        "type": "Orthogonal",
+        "thickness": 2,
+        "color": "#79c4ff",
+        "dataType": "",
+        "shape": [
+          {
+            "x": 1323,
+            "y": 1121.5
+          },
+          {
+            "x": 1249,
+            "y": 1121.5
+          }
+        ],
+        "sides": [
+          "left",
+          "right"
+        ]
+      }
+    }
+  ],
+  "users": [],
+  "diagramViews": [],
+  "idToNameHashTable": {
+    "48986881-0110-40fa-9067-7f1ce3cb21ed": "bd-educacion",
+    "8ca4f254-867d-4b49-97b6-224d0fb2dad5": "alumno",
+    "dd493d99-65dc-44bd-baba-f8458ed9b760": "dni",
+    "c9bb296c-5e1b-4ed2-a1b4-6eda1a681b23": "nombre",
+    "446359d9-4eb9-42ee-8f51-e9d92181ea20": "edad",
+    "c332b8e1-f3f6-40f7-bc48-b14da2b1d250": "asignatura",
+    "2b1b13db-bcc0-4a6f-9d74-d4dc86c68657": "_id",
+    "a16df297-74dc-46ec-a13e-6caf0b111e9c": "nombre",
+    "12962bbe-da49-4fb0-b2ff-31dbc311546b": "descripcion",
+    "16b6cd7a-404c-4f4f-a115-b6c7a4700a29": "profesor",
+    "6fe2d080-fe6a-461f-adbf-f471fb74e236": "dni",
+    "967a32d4-c263-41b4-b8ee-653cb1ee290d": "nombre",
+    "94788f7f-6302-4a7a-a68e-24c813fc5b5b": "especialidad",
+    "f71e41e1-9eb9-42fe-8c15-11f5fadab0e0": "inscritos",
+    "62a22903-39da-4f09-b828-f8d6fea195da": "alumno_id",
+    "a6f5d52a-894d-4cb0-97d5-c82adeb75a0e": "fecha_inscripcion",
+    "b9c3312b-2610-4a5e-8cc8-d5d7b377dd82": "fk_alumno.dni_to_asignatura.inscritos.[0].alumno_dni",
+    "7fea43c8-1ed3-4a1c-98ff-4f29630e4d4f": "_id",
+    "26870c61-6fed-4d86-9ed6-70f3223cf684": "codigo",
+    "fd9d1130-63cd-48fe-93c8-d4c8f0d4d91e": "gestion"
+  },
+  "definitions": {
+    "type": "definitions",
+    "properties": [],
+    "GUID": "db207d08-ca76-4a6f-97c9-0c3867728151"
+  },
+  "polyglotDefinitions": {
+    "type": "polyglotDefinitions",
+    "properties": [],
+    "GUID": "2e90a4dd-6f06-4dfa-a1f1-4e40f96b943e"
+  },
+  "externalDefinitions": {
+    "type": "externalDefinitions",
+    "properties": [],
+    "GUID": "1471e06f-793c-4fde-a62f-f7bae6e1d3fe"
+  },
+  "sources": [],
+  "decorativeSymbols": [],
+  "businessGlossaries": [],
+  "businessGlossaryTerms": [],
+  "dbVersion": "v8.x",
+  "dbVendor": "MongoDB",
+  "appTarget": "MONGODB",
+  "creationTS": "2026-10-20T19:15:31.312Z",
+  "GUID": "1f71aca9-61f9-430e-985c-7b6d17cc43cb",
+  "isLineageEnabled": false,
+  "lastModifTS": "2026-10-20T21:52:30.505Z",
+  "persistenceSchemaVersion": "8",
+  "isCreatedByPlugin": true,
+  "pluginInformation": {
+    "pluginEngineVersion": "1.0.0"
+  },
+  "applicationInformation": {
+    "version": "8.13.4"
+  },
+  "hackoladeMeta": {},
+  "settings": {
+    "centralPane": {
+      "dbLevel": {
+        "erd": [
+          {
+            "GUID": "8ca4f254-867d-4b49-97b6-224d0fb2dad5",
+            "x": 1066,
+            "y": 1078,
+            "width": 183,
+            "height": 105,
+            "color": {}
+          },
+          {
+            "GUID": "c332b8e1-f3f6-40f7-bc48-b14da2b1d250",
+            "x": 1323,
+            "y": 1004,
+            "width": 264,
+            "height": 267,
+            "color": {}
+          }
+        ],
+        "erdDefinitions": {
+          "erd": [],
+          "rootPath": [],
+          "entities": [],
+          "decorativeSymbols": []
+        },
+        "buckets": [
+          {
+            "x": 1002,
+            "y": 940,
+            "GUID": "48986881-0110-40fa-9067-7f1ce3cb21ed"
+          }
+        ],
+        "collapsedNodes": [],
+        "activeRelationship": "",
+        "activeRelationshipFields": {
+          "childField": [],
+          "parentField": []
+        },
+        "selectedCollections": [],
+        "displayColorPicker": false,
+        "graphView": {
+          "erd": [],
+          "buckets": [],
+          "decorativeSymbols": [],
+          "forceLayout": true,
+          "defaultLinkLength": 300
+        },
+        "diagramViews": [],
+        "decorativeSymbols": [],
+        "nestedCollectionsLayout": "horizontal",
+        "options": [],
+        "relationshipUpdateDisabled": false
+      },
+      "collectionLevel": {},
+      "changed": false
+    },
+    "dtDiagram": {
+      "collapsedNodes": [],
+      "shouldDistributeCollections": false
+    }
+  }
+}

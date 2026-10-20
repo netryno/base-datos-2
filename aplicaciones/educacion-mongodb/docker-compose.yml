@@ -1,0 +1,18 @@
+services:
+  web:
+    build: .
+    container_name: educacion-mongodb
+    ports:
+      - "${APP_PORT:-8076}:8000"
+    env_file:
+      - .env
+    networks:
+      - mongo
+    restart: unless-stopped
+
+# La aplicación se une a la red donde ya corre el contenedor de MongoDB
+# (docker network ls). Se configura con DOCKER_MONGO_NETWORK en .env.
+networks:
+  mongo:
+    external: true
+    name: ${DOCKER_MONGO_NETWORK:-bd-mongo_default}

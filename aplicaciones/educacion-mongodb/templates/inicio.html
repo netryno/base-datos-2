@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block titulo %}Inicio{% endblock %}
+
+{% block contenido %}
+<h1>Modelo de datos</h1>
+
+<section class="tarjetas">
+  <div class="tarjeta">
+    <span class="cifra">{{ resumen.alumnos }}</span>
+    <span class="etiqueta">alumnos</span>
+  </div>
+  <div class="tarjeta">
+    <span class="cifra">{{ resumen.asignaturas }}</span>
+    <span class="etiqueta">asignaturas</span>
+  </div>
+  <div class="tarjeta">
+    <span class="cifra">{{ resumen.colecciones | length }}</span>
+    <span class="etiqueta">colecciones en <code>{{ resumen.base_datos }}</code></span>
+  </div>
+</section>
+
+<section class="columnas">
+  <article>
+    <h2>Colección <code>alumno</code></h2>
+    <p>Un documento por alumno. El campo <code>dni</code> tiene índice único.</p>
+<pre>{
+  _id: ObjectId,
+  dni: "12345678",
+  nombre: "Ana Pérez",
+  edad: "20"
+}</pre>
+  </article>
+
+  <article>
+    <h2>Colección <code>asignatura</code></h2>
+    <p>
+      El profesor es un <strong>documento embebido</strong> y los inscritos un
+      <strong>arreglo de referencias</strong> al <code>_id</code> del alumno.
+    </p>
+<pre>{
+  _id: ObjectId,
+  gestion: "2026",
+  codigo: "BD2",
+  nombre: "Base de Datos II",
+  descripcion: "...",
+  profesor: { dni, nombre, especialidad },
+  inscritos: [
+    { alumno_id: ObjectId, fecha_inscripcion: Date }
+  ]
+}</pre>
+  </article>
+</section>
+
+<section>
+  <h2>Operaciones utilizadas</h2>
+  <table class="compacta">
+    <thead><tr><th>Acción</th><th>Comando MongoDB</th></tr></thead>
+    <tbody>
+      <tr><td>Crear colecciones</td><td><code>db.createCollection(nombre, {validator: {$jsonSchema}})</code></td></tr>
+      <tr><td>Registrar alumno / asignatura</td><td><code>insertOne(documento)</code></td></tr>
+      <tr><td>Listar</td><td><code>find().sort()</code></td></tr>
+      <tr><td>Matricular</td><td><code>updateOne({_id, "inscritos.alumno_id": {$ne}}, {$push: {inscritos}})</code></td></tr>
+      <tr><td>Retirar</td><td><code>updateOne({_id}, {$pull: {inscritos: {alumno_id}}})</code></td></tr>
+      <tr><td>Inscritos con datos del alumno</td><td><code>aggregate([$unwind, $lookup, $project])</code></td></tr>
+    </tbody>
+  </table>
+</section>
+{% endblock %}

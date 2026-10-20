@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Sistema Académico{% endblock %} · MongoDB</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+</head>
+<body>
+  <header class="cabecera">
+    <div class="contenedor">
+      <span class="marca">Sistema Académico <small>Base de Datos II · MongoDB</small></span>
+      <nav>
+        <a href="{{ url_for('inicio') }}"      class="{{ 'activo' if request.endpoint == 'inicio' }}">Inicio</a>
+        <a href="{{ url_for('alumnos') }}"     class="{{ 'activo' if request.endpoint == 'alumnos' }}">Alumnos</a>
+        <a href="{{ url_for('asignaturas') }}" class="{{ 'activo' if request.endpoint == 'asignaturas' }}">Asignaturas</a>
+        <a href="{{ url_for('matricula') }}"   class="{{ 'activo' if request.endpoint == 'matricula' }}">Matrícula</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="contenedor">
+    {% with mensajes = get_flashed_messages(with_categories=true) %}
+      {% for tipo, texto in mensajes %}
+        <p class="aviso {{ tipo }}">{{ texto }}</p>
+      {% endfor %}
+    {% endwith %}
+
+    {% block contenido %}{% endblock %}
+  </main>
+
+  <footer class="contenedor pie">
+    Aplicación de ejemplo: Python + PyMongo sin ORM. Operaciones directas sobre documentos.
+  </footer>
+</body>
+</html>

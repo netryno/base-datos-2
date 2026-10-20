@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block titulo %}Matrícula{% endblock %}
+
+{% block contenido %}
+<h1>Matrícula</h1>
+
+<form method="get" action="{{ url_for('matricula') }}" class="selector">
+  <label>Asignatura
+    <select name="asignatura_id" onchange="this.form.submit()">
+      <option value="">— Seleccione —</option>
+      {% for s in asignaturas %}
+      <option value="{{ s._id }}" {{ 'selected' if seleccionada and s._id == seleccionada._id }}>
+        {{ s.gestion }} · {{ s.codigo }} · {{ s.nombre }}
+      </option>
+      {% endfor %}
+    </select>
+  </label>
+  <noscript><button type="submit">Ver</button></noscript>
+</form>
+
+{% if not asignaturas %}
+  <p class="vacio">Primero registre una <a href="{{ url_for('asignaturas') }}">asignatura</a>.</p>
+
+{% elif seleccionada %}
+<section class="columnas">
+  <article class="panel">
+    <h2>Matricular alumno</h2>
+    <p class="gris">{{ seleccionada.nombre }} · Prof. {{ seleccionada.profesor.nombre }}</p>
+
+    {% if disponibles %}
+    <form method="post" action="{{ url_for('matricular') }}">
+      <input type="hidden" name="asignatura_id" value="{{ seleccionada._id }}">
+      <label>Alumno
+        <select name="alumno_id" required>
+          <option value="">— Seleccione —</option>
+          {% for a in disponibles %}
+          <option value="{{ a._id }}">{{ a.nombre }} ({{ a.dni }})</option>
+          {% endfor %}
+        </select>
+      </label>
+      <button type="submit">Matricular</button>
+    </form>
+    {% else %}
+    <p class="vacio">No hay alumnos pendientes de matricular.
+      <a href="{{ url_for('alumnos') }}">Registrar alumnos</a>.</p>
+    {% endif %}
+
+    <p class="nota">
+      Equivale a <code>db.asignatura.updateOne({_id}, {$push: {inscritos: {alumno_id, fecha_inscripcion}}})</code>.
+    </p>
+  </article>
+
+  <article>
+    <h2>Inscritos <small>({{ inscritos | length }})</small></h2>
+    {% if inscritos %}
+    <table>
+      <thead><tr><th>DNI</th><th>Alumno</th><th>Fecha de inscripción</th><th></th></tr></thead>
+      <tbody>
+        {% for i in inscritos %}
+        <tr>
+          <td>{{ i.alumno.dni }}</td>
+          <td>{{ i.alumno.nombre }}</td>
+          <td>{{ i.fecha_inscripcion.strftime('%d/%m/%Y %H:%M') }}</td>
+          <td class="centro">
+            <form method="post" action="{{ url_for('retirar') }}"
+                  onsubmit="return confirm('¿Retirar a {{ i.alumno.nombre }}?')">
+              <input type="hidden" name="asignatura_id" value="{{ seleccionada._id }}">
+              <input type="hidden" name="alumno_id" value="{{ i.alumno._id }}">
+              <button type="submit" class="enlace">Retirar</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p class="nota">
+      Listado obtenido con <code>aggregate([$match, $unwind, $lookup(alumno), $project])</code>.
+    </p>
+    {% else %}
+    <p class="vacio">Esta asignatura aún no tiene inscritos.</p>
+    {% endif %}
+  </article>
+</section>
+{% endif %}
+{% endblock %}
