@@ -1,0 +1,42 @@
+services:
+  redis:
+    image: redis:8
+    container_name: redis-d
+    restart: always
+    ports:
+      - "6379:6379"
+    # --requirepass  -> contraseña de Redis
+    # --appendonly   -> persistencia AOF (los datos sobreviven a reinicios)
+    command: ["redis-server", "--requirepass", "123456", "--appendonly", "yes"]
+    volumes:
+      - ./redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "123456", "--no-auth-warning", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+ 
+  redisinsight:
+    image: redis/redisinsight:latest
+    container_name: redisinsight-ui
+    restart: always
+    ports:
+      - "5540:5540"
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./redisinsight_data:/data
+ 
+  # --- Alternativa ligera (opcional): Redis Commander ---
+  # Descomenta si prefieres una interfaz más simple en el puerto 8081
+  # redis-commander:
+  #   image: rediscommander/redis-commander:latest
+  #   container_name: redis-commander-ui
+  #   restart: always
+  #   depends_on:
+  #     - redis
+  #   ports:
+  #     - "8081:8081"
+  #   environment:
+  #     - REDIS_HOSTS=local:redis:6379:0:123456

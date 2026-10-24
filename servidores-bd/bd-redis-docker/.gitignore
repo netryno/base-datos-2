@@ -1,0 +1,28 @@
+# Datos persistentes de los contenedores
+redis_data/
+redisinsight_data/
+ 
+# Variables de entorno / secretos
+.env
+.env.*
+!.env.example
+ 
+# Backups y dumps
+backups/
+*.rdb
+*.aof
+ 
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+ 
+# Editores / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+ 
+# Logs
+*.log
+ 
