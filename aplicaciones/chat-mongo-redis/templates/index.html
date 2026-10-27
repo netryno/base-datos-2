@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mongo + Redis · Caché y Pub/Sub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+</head>
+<body>
+
+<!-- ============================================================ Elección de rol -->
+<section class="pantalla-rol">
+  <div class="rol-caja">
+    <p class="eyebrow">Base de Datos II · MongoDB + Redis</p>
+    <h1>¿Cómo quieres entrar?</h1>
+    <p class="sub">Un único <strong>publicador</strong> emite turnos y mueve el mapa.
+       Los <strong>suscriptores</strong> reciben todo en tiempo real a través de Redis.</p>
+
+    <div class="rol-opciones">
+      <button class="rol-opcion" data-rol="publicador">
+        <svg viewBox="0 0 24 24"><path d="M3 10v4a1 1 0 0 0 1 1h3l5 4V5L7 9H4a1 1 0 0 0-1 1z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>
+        <strong>Publicador</strong>
+        <small>Llama fichas y mueve el mapa. Solo puede haber uno: <code>SET lock NX EX 30</code>.</small>
+        <em id="estado-lock">consultando…</em>
+      </button>
+      <button class="rol-opcion" data-rol="suscriptor">
+        <svg viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1"/><rect x="17" y="14" width="4" height="6" rx="1"/></svg>
+        <strong>Suscriptor</strong>
+        <small>Escucha los canales <code>chat:sala1</code> y <code>mapa:sala1</code>. Pueden ser varios.</small>
+        <em>siempre disponible</em>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ Cabecera -->
+<header class="cabecera">
+  <div class="marca">
+    <span class="logo">M<i>R</i></span>
+    <div><strong>Mongo + Redis</strong><small>Caché · Pub/Sub · Lock</small></div>
+  </div>
+  <div class="cabecera-der">
+    <span id="chip-rol" class="chip chip-rol"></span>
+    <span id="chip-conexion" class="chip">● sin conexión</span>
+    <button id="btn-salir" class="btn btn-fantasma">Cambiar rol</button>
+  </div>
+</header>
+
+<!-- ============================================================ Tablero -->
+<main class="tablero">
+
+  <!-- Widget 1 · Caché -->
+  <article class="widget">
+    <header class="widget-cab">
+      <span class="paso">01</span>
+      <div>
+        <h2>Caché de consultas</h2>
+        <p>Redis delante de MongoDB · <code>GET → MISS → find_one → SET EX 60</code></p>
+      </div>
+    </header>
+    <div class="widget-cuerpo">
+      <div class="fila-controles">
+        <select id="sel-asignatura" aria-label="Asignatura"></select>
+        <button id="btn-consultar" class="btn btn-primario">Consultar</button>
+        <button id="btn-vaciar" class="btn" title="Borra la clave en Redis">DEL</button>
+      </div>
+
+      <div class="resultado">
+        <div>
+          <span id="badge-origen" class="badge">sin consultar</span>
+          <span id="txt-ttl" class="ttl"></span>
+        </div>
+        <div class="tiempo"><span id="txt-ms">—</span><small>ms</small></div>
+      </div>
+
+      <ul id="historial-cache" class="barras"></ul>
+      <pre id="doc-cache" class="doc" hidden></pre>
+    </div>
+    <pre id="term-cache" class="terminal"></pre>
+  </article>
+
+  <!-- Widget 2 · Turnos -->
+  <article class="widget">
+    <header class="widget-cab">
+      <span class="paso">02</span>
+      <div>
+        <h2>Turnos en tiempo real</h2>
+        <p>Fila de atención · <code>PUBLISH / SUBSCRIBE chat:sala1</code></p>
+      </div>
+    </header>
+    <div class="widget-cuerpo">
+      <div class="solo-publicador">
+        <div class="lock-info">
+          <span class="punto"></span>
+          <code>lock:publicador</code> · expira en <b id="lock-ttl">30</b> s · se renueva cada 10 s
+        </div>
+        <form id="form-turno" class="fila-controles">
+          <input id="inp-turno" maxlength="40" placeholder="Ficha A-12 → Ventanilla 3" autocomplete="off" required>
+          <button class="btn btn-primario">PUBLISH</button>
+        </form>
+      </div>
+
+      <div class="pantalla-turno">
+        <small>Turno actual</small>
+        <strong id="turno-actual">—</strong>
+      </div>
+      <ul id="lista-turnos" class="lista-turnos"></ul>
+    </div>
+    <pre id="term-turnos" class="terminal"></pre>
+  </article>
+
+  <!-- Widget 3 · Mapa -->
+  <article class="widget">
+    <header class="widget-cab">
+      <span class="paso">03</span>
+      <div>
+        <h2>Mapa sincronizado</h2>
+        <p>Leaflet + Redis · <code>PUBLISH / SUBSCRIBE mapa:sala1</code></p>
+      </div>
+    </header>
+    <div class="widget-cuerpo">
+      <div id="mapa" class="mapa"></div>
+      <div class="coords">
+        <code id="txt-coords">—</code>
+        <span id="mapa-ayuda" class="ayuda"></span>
+      </div>
+    </div>
+    <pre id="term-mapa" class="terminal"></pre>
+  </article>
+
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

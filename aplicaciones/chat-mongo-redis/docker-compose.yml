@@ -1,0 +1,22 @@
+services:
+  web:
+    build: .
+    container_name: chat-mongo-redis
+    ports:
+      - "${APP_PORT:-8077}:8077"
+    env_file:
+      - .env
+    networks:
+      - mongo
+      - redis
+    restart: unless-stopped
+
+# La aplicación se une a las redes donde ya corren MongoDB y Redis
+# (docker network ls). Se configuran en el .env.
+networks:
+  mongo:
+    external: true
+    name: ${DOCKER_MONGO_NETWORK:-bd-mongo_default}
+  redis:
+    external: true
+    name: ${DOCKER_REDIS_NETWORK:-bd-redis-docker_default}
