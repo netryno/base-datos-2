@@ -1,0 +1,35 @@
+services:
+  chromadb:
+    image: chromadb/chroma:1.5.3
+    container_name: chromadb-d
+    restart: always
+    ports:
+      # Solo accesible desde tu equipo (Chroma 1.x no trae autenticación)
+      - "127.0.0.1:8000:8000"
+    #environment:
+      # Ruta del archivo de configuración dentro del contenedor
+      #- CONFIG_PATH=/chroma/config.yaml
+    volumes:
+      # Datos persistentes (colecciones, vectores, SQLite)
+      - ./chroma_data:/data
+      # Configuración (puerto, persistencia, CORS)
+      #- ./chroma.docker.yaml:/chroma/config.yaml:ro
+      - ./chroma.docker.yaml:/config.yaml:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v2/heartbeat"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Gestor gráfico (de terceros, no oficial). Solo funciona con la API v2 de Chroma.
+  chromadb-ui:
+    build:
+      # Se construye directo desde GitHub (no hace falta clonar el repo)
+      context: https://github.com/BlackyDrum/chromadb-ui.git#main
+    image: chromadb-ui:local
+    container_name: chromadb-ui
+    restart: always
+    ports:
+      - "127.0.0.1:8090:80"
+    depends_on:
+      - chromadb

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Buscador entre idiomas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+</head>
+<body>
+
+<header class="cabecera">
+  <div class="marca">
+    <span class="logo">C</span>
+    <div>
+      <h1>Buscador entre idiomas</h1>
+      <p>La misma pregunta, dos formas de buscar</p>
+    </div>
+  </div>
+  <div class="cabecera-der">
+    <span id="chip-conexion" class="chip">● consultando…</span>
+    <span id="txt-modelo" class="chip"></span>
+    <span id="txt-registros" class="chip"></span>
+    <button id="btn-cargar" class="btn btn-fantasma" type="button">Cargar datos</button>
+    <button id="btn-reiniciar" class="btn btn-fantasma" type="button">Reiniciar demo</button>
+  </div>
+</header>
+
+<p id="aviso" class="aviso" hidden></p>
+
+<main class="pagina">
+  <form id="form-buscar" class="busqueda" autocomplete="off">
+    <input id="q" type="search" aria-label="Texto a buscar" placeholder="Escribe una palabra o una idea y presiona Enter" autofocus required>
+    <button id="btn-buscar" class="btn btn-primario" type="submit">Buscar</button>
+  </form>
+
+  <div class="ejemplos">
+    <button type="button" class="ejemplo">perro</button>
+    <button type="button" class="ejemplo">rain</button>
+    <button type="button" class="ejemplo">tristesse</button>
+    <button type="button" class="ejemplo">dinero que me pagan cada mes</button>
+    <button type="button" class="ejemplo">animal que maúlla</button>
+    <button type="button" class="ejemplo">quiero viajar por el aire</button>
+  </div>
+
+  <fieldset class="idiomas">
+    <legend>Idiomas en la búsqueda por significado</legend>
+    <label><input class="chk-idioma" type="checkbox" value="es" checked> ES</label>
+    <label><input class="chk-idioma" type="checkbox" value="en" checked> EN</label>
+    <label><input class="chk-idioma" type="checkbox" value="pt" checked> PT</label>
+    <label><input class="chk-idioma" type="checkbox" value="fr" checked> FR</label>
+  </fieldset>
+
+  <div class="paneles">
+    <article class="panel">
+      <header class="panel-cab">
+        <span class="paso">01</span>
+        <div>
+          <h2>Búsqueda exacta (como SQL LIKE)</h2>
+          <code id="sql">WHERE texto ILIKE '%…%'</code>
+        </div>
+      </header>
+      <ul id="lista-exacta" class="lista">
+        <li class="vacio">Escribe algo y presiona Enter</li>
+      </ul>
+    </article>
+
+    <article class="panel panel-significado">
+      <header class="panel-cab">
+        <span class="paso">02</span>
+        <div>
+          <h2>Búsqueda por significado (ChromaDB)</h2>
+          <p>La misma idea, aunque no comparta letras</p>
+        </div>
+      </header>
+      <ul id="lista-significado" class="lista">
+        <li class="vacio">Escribe algo y presiona Enter</li>
+      </ul>
+    </article>
+  </div>
+</main>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

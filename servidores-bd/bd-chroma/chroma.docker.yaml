@@ -1,0 +1,11 @@
+port: 8000
+listen_address: "0.0.0.0"
+persist_path: "/data"
+allow_reset: false
+# Orígenes permitidos para el gestor web (el navegador llama a Chroma directamente)
+cors_allow_origins:
+  - "http://localhost:8090"
+  - "http://127.0.0.1:8090"
+sqlitedb:
+  hash_type: "md5"
+  migration_mode: "apply"

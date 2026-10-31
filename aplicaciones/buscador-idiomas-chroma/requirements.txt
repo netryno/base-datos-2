@@ -1,0 +1,6 @@
+flask==3.1.2
+python-dotenv==1.1.1
+# 1.5.9 es la misma línea 1.5 que el servidor (imagen 1.5.3).
+# 1.5.3 rechaza un .env que tenga otras claves además de las suyas.
+chromadb==1.5.9
+sentence-transformers==6.2.0
