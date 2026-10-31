@@ -29,10 +29,17 @@ const historial = [];
 
 async function iniciarCache() {
   const sel = $("#sel-asignatura");
-  (await api("/api/asignaturas")).forEach((c) => sel.add(new Option(c)));
+  const asignaturas = await api("/api/asignaturas");
+
+  if (!asignaturas.length) {
+    sel.add(new Option("sin datos", "sin-datos"));
+    sel.value = "sin-datos";
+  } else {
+    asignaturas.forEach((c) => sel.add(new Option(c)));
+  }
 
   $("#btn-consultar").onclick = async () => {
-    const r = await api(`/api/cache/${sel.value}`);
+    const r = await api(`/api/cache/${encodeURIComponent(sel.value)}`);
     r.comandos.forEach(([cmd, resp]) => terminal("#term-cache", cmd, resp));
     pintarResultado(r);
   };
