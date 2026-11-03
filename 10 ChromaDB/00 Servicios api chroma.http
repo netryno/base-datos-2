@@ -1,0 +1,93 @@
+### ChromaDB - comandos basicos para REST Client (VS Code)
+### Como se usa:
+###   1. Instala la extension "REST Client" (humao.rest-client) en VS Code.
+###   2. Abre este archivo .http.
+
+
+@base = http://localhost:8051/api/v2
+@tenant = clase_bd2
+@database = demo
+
+
+### 1. Ver si existe el tenant default_tenant
+GET {{base}}/tenants/default_tenant
+
+
+### 2. Identidad / auth
+GET {{base}}/auth/identity
+
+
+### 3. Bases de datos de un tenant
+GET {{base}}/tenants/default_tenant/databases
+
+
+### 4. Colecciones de default_database
+GET {{base}}/tenants/default_tenant/databases/default_database/collections
+
+
+### 5. CREAR TENANT "clase_bd2"
+POST {{base}}/tenants
+Content-Type: application/json
+
+{
+  "name": "clase_bd2"
+}
+
+
+### 6. Crear base de datos "demo" dentro del tenant
+POST {{base}}/tenants/{{tenant}}/databases
+Content-Type: application/json
+
+{
+  "name": "demo"
+}
+
+
+### 7. Crear coleccion "saludos" (con distancia coseno)
+###    Esta request guarda su respuesta como "crearColeccion".
+###    Ejecutala PRIMERO: las siguientes usan {{crearColeccion.response.body.id}}.
+# @name crearColeccion
+POST {{base}}/tenants/{{tenant}}/databases/{{database}}/collections
+Content-Type: application/json
+
+{
+  "name": "saludos",
+  "get_or_create": true,
+  "metadata": {"hnsw:space": "cosine"}
+}
+
+
+### 8. Insertar un "Hola mundo" (embedding de 3 numeros, hecho a mano)
+POST {{base}}/tenants/{{tenant}}/databases/{{database}}/collections/{{crearColeccion.response.body.id}}/upsert
+Content-Type: application/json
+
+{
+  "ids": ["hola"],
+  "embeddings": [[0.1, 0.2, 0.3]],
+  "documents": ["Hola mundo"],
+  "metadatas": [{"idioma": "es"}]
+}
+
+
+### 9. Contar registros de la coleccion
+GET {{base}}/tenants/{{tenant}}/databases/{{database}}/collections/{{crearColeccion.response.body.id}}/count
+
+
+### 10. Recuperar el registro "hola" (con documento, metadatos y embedding)
+POST {{base}}/tenants/{{tenant}}/databases/{{database}}/collections/{{crearColeccion.response.body.id}}/get
+Content-Type: application/json
+
+{
+  "ids": ["hola"],
+  "include": ["documents", "metadatas", "embeddings"]
+}
+
+
+### 11. Busqueda por cercania: dame el vecino mas cercano a [0.1, 0.2, 0.31]
+POST {{base}}/tenants/{{tenant}}/databases/{{database}}/collections/{{crearColeccion.response.body.id}}/query
+Content-Type: application/json
+
+{
+  "query_embeddings": [[0.1, 0.2, 0.31]],
+  "n_results": 1
+}

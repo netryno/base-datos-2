@@ -5,7 +5,7 @@ services:
     restart: always
     ports:
       # Solo accesible desde tu equipo (Chroma 1.x no trae autenticación)
-      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:8051:8000"
     #environment:
       # Ruta del archivo de configuración dentro del contenedor
       #- CONFIG_PATH=/chroma/config.yaml
@@ -16,7 +16,7 @@ services:
       #- ./chroma.docker.yaml:/chroma/config.yaml:ro
       - ./chroma.docker.yaml:/config.yaml:ro
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v2/heartbeat"]
+      test: ["CMD", "curl", "-f", "http://localhost:8051/api/v2/heartbeat"]
       interval: 30s
       timeout: 10s
       retries: 3
