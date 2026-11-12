@@ -1,0 +1,136 @@
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+    container_name: elasticsearch-d
+    restart: always
+    ports:
+      - "9200:9200"
+      - "9300:9300"   # transporte entre nodos (útil si escalas a clúster)
+    environment:
+      # --- Modo nodo único (sin clúster) ---
+      - discovery.type=single-node
+
+      # --- Seguridad ---
+      # Activamos seguridad de X-Pack. El usuario por defecto es "elastic".
+      - xpack.security.enabled=true
+      - xpack.security.enrollment.enabled=true
+      - ELASTIC_PASSWORD=123456
+
+      # --- SSL: en desarrollo lo desactivamos para http://
+      #     Si quieres https://, pon true y monta los certificados.
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+
+      # --- Memoria JVM (heap). Regla: 50% de la RAM del contenedor,
+      #     y siempre igual Xms y Xmx para evitar redimensionamientos.
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+
+      # --- Nombre del clúster / nodo (útil si después escalas) ---
+      - cluster.name=es-cluster-local
+      - node.name=es-node-1
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - ./elasticsearch_data:/usr/share/elasticsearch/data
+      # Si activas SSL, monta aquí tus certificados:
+      # - ./certs:/usr/share/elasticsearch/config/certificates
+    healthcheck:
+      # "true" en ES8 es password, no un comando. Por eso 'echo true'.
+      test:
+        - CMD-SHELL
+        - "curl -fsS -u elastic:123456 http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s || exit 1"
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 40s   # ES tarda en arrancar, le damos margen
+
+  # --- Contenedor temporal (one-shot) que prepara credenciales ---
+  # Kibana NO puede usar el usuario 'elastic' como backend (ES8 lo prohíbe).
+  # Hay que usar el usuario dedicado 'kibana_system' y setearle su contraseña.
+  # Este contenedor corre una sola vez, setea la pass, y termina.
+  kibana_setup:
+    image: curlimages/curl:8.9.1
+    container_name: kibana-setup
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    # Llamada a la API de Elasticsearch para setear la password de kibana_system.
+    # Es idempotente: se puede repetir sin problema.
+    entrypoint: ["sh", "-c"]
+    command:
+      - |
+        echo "Seteando contraseña de kibana_system...";
+        curl -fsS -u elastic:123456 \
+          -X POST http://elasticsearch:9200/_security/user/kibana_system/_password \
+          -H 'Content-Type: application/json' \
+          -d '{"password":"123456"}';
+        echo "";
+        echo "OK. kibana_system listo para conectarse.";
+    restart: "no"
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.15.0
+    container_name: kibana-ui
+    restart: always
+    ports:
+      - "5601:5601"
+    depends_on:
+      kibana_setup:
+        condition: service_completed_successfully
+    environment:
+      # Kibana se conecta a Elasticsearch por el nombre del servicio
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      # IMPORTANTE: el usuario backend debe ser 'kibana_system', NO 'elastic'.
+      # 'elastic' es superusuario y Kibana lo rechaza (no puede escribir
+      # en índices de sistema como .kibana).
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=123456
+
+      # Evita warnings en desarrollo cuando no hay HTTPS
+      - ELASTICSEARCH_SSL_VERIFICATIONMODE=none
+      - SERVER_PUBLICBASEURL=http://localhost:5601
+    volumes:
+      - ./kibana_data:/usr/share/kibana/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:5601/api/status || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s   # Kibana también es lento en el primer arranque
+
+# --- NOTAS IMPORTANTES (casos especiales) ---
+#
+# 1) vm.max_map_count en el HOST (no dentro del contenedor):
+#    Elasticsearch lo necesita, sino NO arranca. Ejecuta UNA sola vez en la máquina host:
+#
+#        sudo sysctl -w vm.max_map_count=262144
+#
+#    Para que persista entre reinicios del host:
+#        echo 'vm.max_map_count=262144' | sudo tee /etc/sysctl.d/99-elasticsearch.conf
+#        sudo sysctl --system
+#
+# 2) Memoria: con -Xms1g -Xmx1g el contenedor necesita >= 2GB libres.
+#    Si tu máquina tiene poca RAM, baja a -Xms512m -Xmx512m.
+#
+# 3) Versiones: ELASTICSEARCH y KIBANA DEBEN tener la misma versión (8.15.0).
+#    Si cambias una, cambia la otra.
+#
+# 4) Primer login en Kibana:  http://localhost:5601
+#    usuario: elastic   clave: 123456
+#
+#    IMPORTANTE: hay DOS usuarios distintos en juego:
+#      - 'elastic'        -> el que TÚ usas para loguearte en la UI de Kibana
+#                           y para llamar a la API de ES en el puerto 9200.
+#      - 'kibana_system'  -> el que KIBANA usa internamente para hablar con ES
+#                           (no lo usas tú nunca, lo maneja el contenedor).
+#    El contenedor 'kibana_setup' setea la contraseña de 'kibana_system'
+#    automáticamente la primera vez. Si borras elasticsearch_data y vuelves
+#    a levantar, kibana_setup vuelve a setearla (es idempotente).
+#
+# 5) El warning "OpenSSL legacy providers" en los logs de Kibana es solo
+#    informativo (suele aparecer en ARM64 / Apple Silicon). No detiene el arranque.

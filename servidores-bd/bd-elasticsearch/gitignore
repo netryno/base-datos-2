@@ -1,0 +1,31 @@
+# === Bases de datos dockerizadas: datos persistentes ===
+
+# Elasticsearch
+elasticsearch_data/
+
+# Kibana
+kibana_data/
+
+# Redis (de tu compose anterior)
+redis_data/
+redisinsight_data/
+
+# MongoDB (de tu compose anterior)
+mongo_data/
+
+# === Certificados (si activas SSL en el futuro) ===
+certs/
+*.pem
+*.key
+*.crt
+
+# === Docker ===
+# No ignores el propio docker-compose.yml si quieres compartir la config
+# (pero si lleva secretos reales, síguelo y usa un .env + docker-compose.override.yml)
+.env
+.env.*
+!.env.example
+
+# === Otros ===
+.DS_Store
+*.log
