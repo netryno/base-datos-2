@@ -1,0 +1,335 @@
+### ============================================================
+### ELASTICSEARCH - guía básica para REST Client (VS Code)
+### ============================================================
+### Cómo se usa:
+###   1. Instala la extensión "REST Client" (humao.rest-client) en VS Code.
+###   2. Abre este archivo .http.
+###   3. Haz clic en "Send Request" sobre cada petición, de arriba hacia abajo.
+###
+### Equivalencias con SQL (lo más importante de recordar):
+###   Clúster   = el servidor de base de datos (en Elasticsearch NO hay "bases de datos")
+###   Índice    = TABLA
+###   Documento = FILA
+###   Campo     = COLUMNA
+###   Mapping   = ESQUEMA (el CREATE TABLE)
+###
+### Si tu Elasticsearch NO pide usuario, borra las líneas "Authorization".
+
+
+@host = http://localhost:9200
+@user = elastic
+@password = 123456
+@auth = Basic {{user}}:{{password}}
+
+
+
+### ============================================================
+### PARTE 0 - HOLA MUNDO
+### ============================================================
+
+### 0.1 ¿Está vivo? Devuelve nombre del clúster, versión y el lema "You Know, for Search"
+GET {{host}}/
+Authorization: {{auth}}
+
+
+### 0.2 Salud del clúster: green (todo bien), yellow (faltan réplicas), red (hay problemas)
+GET {{host}}/_cluster/health
+Authorization: {{auth}}
+
+
+
+### ============================================================
+### PARTE 1 - CREAR LA TABLA (índice)
+### ============================================================
+
+### 1.1 Crear el índice "recetas" con su mapping
+### SQL: CREATE TABLE recetas (titulo, ingredientes, categoria, minutos);
+###   text    = se analiza (sirve para buscar palabras)
+###   keyword = valor exacto (sirve para filtrar y agrupar)
+###   replicas = 0 porque tenemos un solo nodo (así queda en "green")
+PUT {{host}}/recetas
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  },
+  "mappings": {
+    "properties": {
+      "titulo":       { "type": "text", "analyzer": "spanish" },
+      "ingredientes": { "type": "text", "analyzer": "spanish" },
+      "categoria":    { "type": "keyword" },
+      "minutos":      { "type": "integer" }
+    }
+  }
+}
+
+
+
+### ============================================================
+### PARTE 2 - CRUD: C = CREATE (insertar)
+### ============================================================
+### Nota: "?refresh=true" hace que el dato se pueda buscar al instante.
+
+### 2.1 Insertar con id propio (como INSERT con clave primaria)
+### SQL: INSERT INTO recetas VALUES (1, 'Tortilla de papas', ...);
+PUT {{host}}/recetas/_doc/1?refresh=true
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "titulo": "Tortilla de papas",
+  "ingredientes": "papas huevos aceite sal",
+  "categoria": "cena",
+  "minutos": 25
+}
+
+
+### 2.2 Insertar SIN id: Elasticsearch genera uno (como AUTO_INCREMENT)
+### Mira el "_id" que devuelve la respuesta.
+POST {{host}}/recetas/_doc?refresh=true
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "titulo": "Ensalada fresca",
+  "ingredientes": "lechuga tomate cebolla aceite limón",
+  "categoria": "almuerzo",
+  "minutos": 10
+}
+
+
+### 2.3 Insertar con un id que YA existe: da error 409 (como violar una clave primaria)
+PUT {{host}}/recetas/_create/1?refresh=true
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "titulo": "Intento duplicado",
+  "ingredientes": "nada",
+  "categoria": "cena",
+  "minutos": 1
+}
+
+
+### 2.4 Insertar varios documentos de una sola vez (_bulk)
+### Cada documento lleva una línea de acción y una línea de datos.
+### OJO: el cuerpo termina con una línea en blanco.
+POST {{host}}/recetas/_bulk?refresh=true
+Authorization: {{auth}}
+Content-Type: application/x-ndjson
+
+{"index":{"_id":"3"}}
+{"titulo":"Sopa de maní","ingredientes":"maní papas carne zanahoria","categoria":"almuerzo","minutos":60}
+{"index":{"_id":"4"}}
+{"titulo":"Pan casero","ingredientes":"harina agua sal levadura aceite","categoria":"desayuno","minutos":90}
+
+
+
+
+### ============================================================
+### PARTE 3 - EXPLORAR (equivalente a SHOW TABLES, DESCRIBE, COUNT)
+### ============================================================
+
+### 3.1 Listar los índices (las TABLAS) con cuántas filas tiene cada uno
+### SQL: SHOW TABLES;   (docs.count = número de filas)
+### Los que empiezan con punto (.) son internos de Elasticsearch.
+GET {{host}}/_cat/indices?v&s=index
+Authorization: {{auth}}
+
+
+### 3.2 Cuántas filas tiene "recetas"
+### SQL: SELECT COUNT(*) FROM recetas;
+GET {{host}}/recetas/_count
+Authorization: {{auth}}
+
+
+### 3.3 Ver las columnas y sus tipos
+### SQL: DESCRIBE recetas;
+GET {{host}}/recetas/_mapping
+Authorization: {{auth}}
+
+
+### 3.4 Ver la configuración (shards y réplicas)
+GET {{host}}/recetas/_settings
+Authorization: {{auth}}
+
+
+### 3.5 Ver todas las filas (por defecto muestra 10)
+### SQL: SELECT * FROM recetas;
+GET {{host}}/recetas/_search
+Authorization: {{auth}}
+
+
+### 3.6 Leer UNA fila por su id
+### SQL: SELECT * FROM recetas WHERE id = 1;
+GET {{host}}/recetas/_doc/1
+Authorization: {{auth}}
+
+
+### 3.7 Leer un id que no existe: devuelve "found": false (404)
+GET {{host}}/recetas/_doc/999
+Authorization: {{auth}}
+
+
+
+### ============================================================
+### PARTE 4 - CRUD: U = UPDATE (editar) y D = DELETE (eliminar)
+### ============================================================
+
+### 4.1 Editar solo un campo (actualización parcial)
+### SQL: UPDATE recetas SET minutos = 30 WHERE id = 1;
+POST {{host}}/recetas/_update/1?refresh=true
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "doc": {
+    "minutos": 40
+  }
+}
+
+
+### 4.2 Comprobar el cambio
+GET {{host}}/recetas/_doc/1
+Authorization: {{auth}}
+
+
+### 4.3 Reemplazar el documento completo (PUT con el mismo id)
+### CUIDADO: reemplaza TODO. Si omites un campo, ese campo desaparece.
+PUT {{host}}/recetas/_doc/4?refresh=true
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "titulo": "Pan casero",
+  "ingredientes": "harina agua sal levadura aceite",
+  "categoria": "desayuno",
+  "minutos": 80
+}
+
+
+### 4.4 Crear dos documentos de prueba para practicar el borrado
+POST {{host}}/recetas/_bulk?refresh=true
+Authorization: {{auth}}
+Content-Type: application/x-ndjson
+
+{"index":{"_id":"98"}}
+{"titulo":"Prueba A","ingredientes":"nada","categoria":"prueba","minutos":1}
+{"index":{"_id":"99"}}
+{"titulo":"Prueba B","ingredientes":"nada","categoria":"prueba","minutos":1}
+
+
+
+### 4.5 Eliminar UNA fila por su id
+### SQL: DELETE FROM recetas WHERE id = 99;
+DELETE {{host}}/recetas/_doc/99?refresh=true
+Authorization: {{auth}}
+
+
+### 4.6 Eliminar varias filas con una condición
+### SQL: DELETE FROM recetas WHERE categoria = 'prueba';
+POST {{host}}/recetas/_delete_by_query?refresh=true
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "query": {
+    "term": { "categoria": "prueba" }
+  }
+}
+
+
+### 4.7 Verificar: deben quedar 4 recetas
+GET {{host}}/recetas/_count
+Authorization: {{auth}}
+
+
+
+### ============================================================
+### PARTE 5 - BUSCAR (lo que SQL no hace bien)
+### ============================================================
+### Cada resultado trae "_score": qué tan relevante es. Mayor = mejor.
+### (Se usa POST porque lleva cuerpo; GET también funciona.)
+
+### 5.1 Traer todo
+### SQL: SELECT * FROM recetas;
+POST {{host}}/recetas/_search
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "query": { "match_all": {} }
+}
+
+
+### 5.2 Buscar una palabra dentro del texto
+### SQL (lento): WHERE ingredientes LIKE '%aceite%'
+POST {{host}}/recetas/_search
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "query": {
+    "match": { "ingredientes": "aceite" }
+  }
+}
+
+
+### 5.3 Singular y plural: buscar "papa" encuentra "papas" (el análisis reduce a la raíz)
+### LIKE '%papa%' también lo encontraría, pero "huevo" no encontraría "huevos" en sentido contrario.
+POST {{host}}/recetas/_search
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "query": {
+    "match": { "ingredientes": "papa" }
+  }
+}
+
+
+### 5.4 Tolerar errores de tipeo: "acete" en lugar de "aceite"
+### Con LIKE no devolvería nada. Si no sale, prueba con "fuzziness": 2
+POST {{host}}/recetas/_search
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "query": {
+    "match": {
+      "ingredientes": { "query": "acete", "fuzziness": "AUTO" }
+    }
+  }
+}
+
+
+### 5.5 Filtrar por valor exacto (keyword)
+### SQL: WHERE categoria = 'almuerzo'
+POST {{host}}/recetas/_search
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "query": {
+    "term": { "categoria": "almuerzo" }
+  }
+}
+
+
+### 5.6 Filtrar por rango
+### SQL: WHERE minutos <= 30
+POST {{host}}/recetas/_search
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "query": {
+    "range": { "minutos": { "lte": 30 } }
+  }
+}
+
+
+### 5.7 Combinar

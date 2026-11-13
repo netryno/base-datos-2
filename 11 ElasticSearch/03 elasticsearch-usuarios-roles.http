@@ -1,0 +1,405 @@
+### ============================================================
+### ELASTICSEARCH - Gestión de USUARIOS y ROLES (REST Client)
+### ============================================================
+### Requisito: seguridad activada (tu Elasticsearch pide usuario y contraseña).
+### Si la seguridad está apagada (xpack.security.enabled=false), estas
+### peticiones /_security/... darán error.
+###
+### La idea en una frase:
+###   los PERMISOS no se dan a los usuarios: se dan a ROLES,
+###   y a cada usuario se le asignan uno o varios roles.
+###
+### USUARIO  vs  ROL
+### ------------------------------------------------------------
+###              USUARIO                        ROL
+### Qué es      una persona o aplicación       un conjunto de permisos
+### Contiene    nombre, contraseña, roles      qué puede hacer y sobre qué índices
+### Ejemplo     ana, beto                      lector_recetas, editor_recetas
+### SQL         CREATE USER ana ...            CREATE ROLE lector ...
+###                                            GRANT lector TO ana;
+###
+### ¿Dónde se gestiona?
+###   1. Aquí, con la API REST (este archivo).
+###   2. Kibana -> Stack Management -> Security -> Users / Roles (visual).
+###   3. Kibana -> Dev Tools (las mismas peticiones sin host ni Authorization).
+
+
+@host = http://localhost:9200
+@auth = Basic elastic:123456
+
+### Contraseñas de los usuarios de práctica
+### (si cambias una contraseña, actualiza también estas variables)
+@authAna = Basic ana:clase123
+@authBeto = Basic beto:clase123
+
+
+
+### ============================================================
+### PARTE 0 - ¿QUIÉN SOY?
+### ============================================================
+
+### 0.1 Mi usuario actual y mis roles
+### "elastic" es el superusuario: tiene el rol "superuser" (puede todo).
+GET {{host}}/_security/_authenticate
+Authorization: {{auth}}
+
+
+
+### ============================================================
+### PARTE 1 - LISTAR (usuarios y roles)
+### ============================================================
+
+### 1.1 Listar todos los usuarios
+### Verás "elastic" y otros usuarios internos (kibana_system, etc.).
+### Los que traen "_reserved": true son del sistema: no se pueden eliminar.
+### SQL (MySQL): SELECT user FROM mysql.user;
+GET {{host}}/_security/user
+Authorization: {{auth}}
+
+
+### 1.2 Versión corta: solo usuario -> roles y si está habilitado
+### filter_path recorta la respuesta para que sea fácil de leer.
+GET {{host}}/_security/user?filter_path=*.roles,*.enabled
+Authorization: {{auth}}
+
+
+### 1.3 Ver UN usuario
+GET {{host}}/_security/user/elastic
+Authorization: {{auth}}
+
+
+### 1.4 Listar todos los roles
+### Son muchos: Elasticsearch trae roles predefinidos (los "_reserved": true).
+### Ejemplos útiles: superuser (todo), kibana_admin (entrar a Kibana),
+### monitoring_user (monitorear).
+### Los roles que tú crees aparecerán sin "_reserved".
+GET {{host}}/_security/role
+Authorization: {{auth}}
+
+
+### 1.5 Ver UN rol en detalle (el superusuario puede todo: cluster ["all"] e índices "*")
+GET {{host}}/_security/role/superuser
+Authorization: {{auth}}
+
+
+
+### ============================================================
+### PARTE 2 - CREAR ROLES (primero los permisos)
+### ============================================================
+### Un rol define:
+###   cluster -> permisos del servidor (ej: "monitor" = ver la salud)
+###   indices -> sobre qué índices (names) y qué puede hacer (privileges)
+###
+### Privilegios de índice más usados:
+###   read                  buscar y leer documentos
+###   write                 insertar, editar y borrar documentos
+###   create_index          crear índices
+###   delete_index          eliminar índices
+###   view_index_metadata   ver mappings y settings
+###   manage                administrar el índice
+###   all                   todo lo anterior
+###
+### "names" acepta comodines: "recetas*" = recetas, recetas_2026, etc.
+
+### 2.1 Rol "lector_recetas": solo LEER el índice recetas
+### SQL: GRANT SELECT ON recetas TO lector_recetas;
+POST {{host}}/_security/role/lector_recetas
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "indices": [
+    {
+      "names": ["recetas"],
+      "privileges": ["read"]
+    }
+  ]
+}
+
+
+### 2.2 Rol "editor_recetas": LEER y ESCRIBIR en recetas
+### SQL: GRANT SELECT, INSERT, UPDATE, DELETE ON recetas TO editor_recetas;
+POST {{host}}/_security/role/editor_recetas
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "indices": [
+    {
+      "names": ["recetas"],
+      "privileges": ["read", "write"]
+    }
+  ]
+}
+
+
+### 2.3 Rol "analista": leer varios índices y ver la salud del clúster
+POST {{host}}/_security/role/analista
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "cluster": ["monitor"],
+  "indices": [
+    {
+      "names": ["recetas", "equipos"],
+      "privileges": ["read", "view_index_metadata"]
+    }
+  ]
+}
+
+
+### 2.4 Comprobar: ver los roles que acabo de crear
+GET {{host}}/_security/role/lector_recetas,editor_recetas,analista
+Authorization: {{auth}}
+
+
+
+### ============================================================
+### PARTE 3 - CREAR USUARIOS (y asignarles roles)
+### ============================================================
+### La contraseña debe tener mínimo 6 caracteres.
+
+### 3.1 Usuario "ana" con el rol de solo lectura
+### SQL: CREATE USER ana ...; GRANT lector_recetas TO ana;
+### En la respuesta: "created": true
+POST {{host}}/_security/user/ana
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "password": "clase123",
+  "roles": ["lector_recetas"],
+  "full_name": "Ana (alumna)",
+  "email": "ana@ejemplo.com"
+}
+
+
+### 3.2 Usuario "beto" con el rol de lectura y escritura
+POST {{host}}/_security/user/beto
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "password": "clase123",
+  "roles": ["editor_recetas"],
+  "full_name": "Beto (alumno)",
+  "email": "beto@ejemplo.com"
+}
+
+
+### 3.3 Verificar: usuarios con sus roles
+GET {{host}}/_security/user/ana,beto?filter_path=*.roles,*.full_name
+Authorization: {{auth}}
+
+
+
+### ============================================================
+### PARTE 4 - PROBAR LOS PERMISOS (entrando como ana y como beto)
+### ============================================================
+### Si el índice "recetas" no existe, créalo primero con el archivo básico.
+
+### 4.1 Como ANA: ¿quién soy? Debe mostrar roles: ["lector_recetas"]
+GET {{host}}/_security/_authenticate
+Authorization: {{authAna}}
+
+
+### 4.2 Como ANA: ¿tengo estos permisos? (responde true o false por cada uno)
+POST {{host}}/_security/user/_has_privileges
+Authorization: {{authAna}}
+Content-Type: application/json
+
+{
+  "index": [
+    { "names": ["recetas"], "privileges": ["read", "write"] }
+  ]
+}
+
+
+### 4.3 Como ANA: buscar -> funciona (200)
+POST {{host}}/recetas/_search
+Authorization: {{authAna}}
+Content-Type: application/json
+
+{
+  "query": { "match_all": {} }
+}
+
+
+### 4.4 Como ANA: insertar -> 403 security_exception (permiso denegado)
+POST {{host}}/recetas/_doc
+Authorization: {{authAna}}
+Content-Type: application/json
+
+{
+  "titulo": "Receta de Ana",
+  "ingredientes": "nada",
+  "categoria": "prueba",
+  "minutos": 5
+}
+
+
+### 4.5 Como BETO: insertar -> funciona (201)
+POST {{host}}/recetas/_doc?refresh=true
+Authorization: {{authBeto}}
+Content-Type: application/json
+
+{
+  "titulo": "Receta de Beto",
+  "ingredientes": "nada",
+  "categoria": "prueba",
+  "minutos": 5
+}
+
+
+### 4.6 Como BETO: borrar el índice completo -> 403 (solo tiene read y write)
+DELETE {{host}}/recetas
+Authorization: {{authBeto}}
+
+
+
+### ============================================================
+### PARTE 5 - EDITAR ROLES DE UN USUARIO
+### ============================================================
+### OJO: Elasticsearch NO tiene un comando "añadir rol" ni "quitar rol".
+### Al editar un usuario se envía la LISTA COMPLETA de roles y REEMPLAZA a la anterior.
+###   - Añadir un rol    = enviar la lista anterior + el nuevo
+###   - Quitar un rol    = enviar la lista sin ese rol
+### Al editar, envía también full_name y email para no perderlos.
+### La contraseña es opcional al editar: si la omites, no cambia.
+
+### 5.1 AÑADIR un rol a ana: ahora tendrá lector_recetas y analista
+POST {{host}}/_security/user/ana
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "roles": ["lector_recetas", "analista"],
+  "full_name": "Ana (alumna)",
+  "email": "ana@ejemplo.com"
+}
+
+
+### 5.2 Comprobar
+GET {{host}}/_security/user/ana?filter_path=*.roles
+Authorization: {{auth}}
+
+
+### 5.3 QUITAR un rol: ana solo conserva "analista"
+POST {{host}}/_security/user/ana
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "roles": ["analista"],
+  "full_name": "Ana (alumna)",
+  "email": "ana@ejemplo.com"
+}
+
+
+### 5.4 EDITAR UN ROL: darle a "lector_recetas" también acceso a "equipos"
+### Se vuelve a enviar el rol COMPLETO (reemplaza al anterior).
+### Todos los usuarios con ese rol reciben el cambio, sin tocar a los usuarios.
+POST {{host}}/_security/role/lector_recetas
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "indices": [
+    {
+      "names": ["recetas", "equipos"],
+      "privileges": ["read"]
+    }
+  ]
+}
+
+
+
+### ============================================================
+### PARTE 6 - CONTRASEÑA Y ESTADO DEL USUARIO
+### ============================================================
+
+### 6.1 Cambiar la contraseña de ana
+### (si la cambias, actualiza la variable @authAna del inicio)
+POST {{host}}/_security/user/ana/_password
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "password": "nueva123"
+}
+
+
+### 6.2 Deshabilitar a ana: no puede entrar, pero el usuario sigue existiendo
+PUT {{host}}/_security/user/ana/_disable
+Authorization: {{auth}}
+
+
+### 6.3 Comprobar: "enabled": false
+GET {{host}}/_security/user/ana?filter_path=*.enabled
+Authorization: {{auth}}
+
+
+### 6.4 Volver a habilitarla
+PUT {{host}}/_security/user/ana/_enable
+Authorization: {{auth}}
+
+
+
+### ============================================================
+### PARTE 7 - (OPCIONAL) ENTRAR A KIBANA
+### ============================================================
+### Los permisos de datos vienen de los roles de índices (arriba).
+### Para además entrar a la interfaz de Kibana, el usuario necesita un rol de Kibana.
+### "kibana_admin" es un rol predefinido que da acceso a Kibana.
+### Ojo: da acceso a Kibana, pero los DATOS se siguen limitando por sus otros roles.
+
+### 7.1 Darle a beto acceso a Kibana (se envía la lista completa de roles)
+POST {{host}}/_security/user/beto
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "roles": ["editor_recetas", "kibana_admin"],
+  "full_name": "Beto (alumno)",
+  "email": "beto@ejemplo.com"
+}
+### Luego entra a http://localhost:5601 con beto / clase123.
+
+
+
+### ============================================================
+### PARTE 8 - ELIMINAR
+### ============================================================
+
+### 8.1 Eliminar un usuario
+### SQL: DROP USER ana;
+DELETE {{host}}/_security/user/ana
+Authorization: {{auth}}
+
+
+### 8.2 Eliminar otro usuario
+DELETE {{host}}/_security/user/beto
+Authorization: {{auth}}
+
+
+### 8.3 Eliminar un rol
+### OJO: si un usuario todavía lo tiene asignado, el usuario sigue existiendo
+### con ese nombre de rol, pero ya sin ningún permiso. Revisa antes quién lo usa.
+DELETE {{host}}/_security/role/analista
+Authorization: {{auth}}
+
+
+### 8.4
+DELETE {{host}}/_security/role/lector_recetas
+Authorization: {{auth}}
+
+
+### 8.5
+DELETE {{host}}/_security/role/editor_recetas
+Authorization: {{auth}}
+
+
+### 8.6 Comprobar: ya no deben aparecer ana ni beto
+GET {{host}}/_security/user?filter_path=*.roles
+Authorization: {{auth}}

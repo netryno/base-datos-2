@@ -1,0 +1,168 @@
+### ============================================================
+### EJERCICIO: Equipos de fútbol en Elasticsearch
+### ============================================================
+### Tiempo estimado: 15 minutos
+###
+### Cómo se usa:
+###   1. Abre este archivo en VS Code con la extensión "REST Client".
+###   2. Completa los cuerpos (body) de las peticiones marcadas con TODO.
+###   3. Ejecuta con "Send Request" y revisa la respuesta.
+###
+### ENTREGABLE: captura de pantalla de la respuesta de cada paso.
+
+
+@host = http://localhost:9200
+@auth = Basic elastic:123456
+
+
+
+### ------------------------------------------------------------
+### DATOS: estos son los 6 equipos que vas a registrar
+### ------------------------------------------------------------
+### id | nombre              | país      | fundación | biografía
+### 1  | Real Madrid         | España    | 1902      | Club de Madrid fundado en 1902. Juega en el estadio Santiago Bernabéu y es uno de los clubes más laureados de Europa.
+### 2  | FC Barcelona        | España    | 1899      | Club catalán fundado en 1899. Es conocido por su cantera, La Masia.
+### 3  | Boca Juniors        | Argentina | 1905      | Club de Buenos Aires fundado en 1905. Su estadio, La Bombonera, es famoso por el ambiente de su hinchada.
+### 4  | Bolívar             | Bolivia   | 1925      | Club de La Paz fundado en 1925. Es uno de los equipos más ganadores del fútbol boliviano.
+### 5  | The Strongest       | Bolivia   | 1908      | Club de La Paz fundado en 1908. Su camiseta amarilla y negra le valió el apodo de Tigre.
+### 6  | Oriente Petrolero   | Bolivia   | 1955      | Club de Santa Cruz de la Sierra fundado en 1955. Es uno de los equipos más populares del oriente boliviano.
+
+
+
+### ------------------------------------------------------------
+### PASO 1. Crea el índice "equipos"  (en SQL sería un CREATE TABLE)
+### ------------------------------------------------------------
+### Campos:
+###   nombre     -> texto
+###   pais       -> keyword (valor exacto, para filtrar)
+###   fundacion  -> número entero
+###   biografia  -> texto, con analizador "spanish"
+### Usa 1 shard y 0 réplicas (settings).
+### Pista: mira cómo se creó el índice en la guía básica (.http de recetas).
+PUT {{host}}/equipos
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  TODO: completa aquí settings y mappings
+}
+
+
+
+### ------------------------------------------------------------
+### PASO 2. Registra los 6 equipos con _bulk (en SQL serían 6 INSERT)
+### ------------------------------------------------------------
+### Usa como _id el número de la tabla de datos (1 al 6).
+### Cada equipo son dos líneas: la acción y los datos.
+### El cuerpo debe terminar con una línea en blanco.
+POST {{host}}/equipos/_bulk?refresh=true
+Authorization: {{auth}}
+Content-Type: application/x-ndjson
+
+TODO: completa aquí las 12 líneas
+
+
+
+### Verifica: debe responder "count": 6
+GET {{host}}/equipos/_count
+Authorization: {{auth}}
+
+
+
+### ------------------------------------------------------------
+### PASO 3. Busca en la biografía (en SQL sería un LIKE, pero mejor)
+### ------------------------------------------------------------
+### 3.a Busca los equipos cuya biografía mencione "estadio".
+###     ¿Cuántos aparecen? ¿Cuáles?
+POST {{host}}/equipos/_search
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  TODO: usa "query" con "match" sobre "biografia"
+}
+
+
+### 3.b Busca "La Paz". ¿Qué equipos aparecen?
+POST {{host}}/equipos/_search
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  TODO
+}
+
+
+### 3.c Busca la palabra con error "bombonra" (en vez de "bombonera").
+###     Pista: agrega "fuzziness": "AUTO". ¿Qué equipo aparece?
+POST {{host}}/equipos/_search
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  TODO
+}
+
+
+
+### ------------------------------------------------------------
+### BONUS (opcional). Solo los equipos de Bolivia
+### ------------------------------------------------------------
+### Pista: usa "term" sobre el campo "pais".
+POST {{host}}/equipos/_search
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  TODO
+}
+
+
+
+### ------------------------------------------------------------
+### PREGUNTAS PARA TU ENTREGA
+### ------------------------------------------------------------
+### 1. ¿Por qué "pais" es keyword y "biografia" es text?
+### 2. ¿Qué campo de la respuesta indica qué tan relevante es cada resultado?
+### 3. ¿Qué habría devuelto un LIKE '%bombonra%' en SQL?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
