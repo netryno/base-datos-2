@@ -64,6 +64,22 @@ services:
     entrypoint: ["sh", "-c"]
     command:
       - |
+        set -e;
+        echo "Esperando a Elasticsearch (red Docker; en Windows puede tardar unos segundos)...";
+        ok=0;
+        i=0;
+        while [ "$$i" -lt 60 ]; do
+          if curl -fsS -u elastic:123456 "http://elasticsearch:9200/_cluster/health?wait_for_status=yellow&timeout=5s" >/dev/null 2>&1; then
+            ok=1;
+            break;
+          fi;
+          i=$$((i + 1));
+          sleep 2;
+        done;
+        if [ "$$ok" -ne 1 ]; then
+          echo "ERROR: no se pudo contactar a Elasticsearch desde kibana_setup.";
+          exit 1;
+        fi;
         echo "Seteando contraseña de kibana_system...";
         curl -fsS -u elastic:123456 \
           -X POST http://elasticsearch:9200/_security/user/kibana_system/_password \
@@ -131,6 +147,13 @@ services:
 #    El contenedor 'kibana_setup' setea la contraseña de 'kibana_system'
 #    automáticamente la primera vez. Si borras elasticsearch_data y vuelves
 #    a levantar, kibana_setup vuelve a setearla (es idempotente).
+#    Si Kibana falla por autenticación de kibana_system, fuerza que setup
+#    corra de nuevo:  docker compose up --force-recreate kibana_setup elasticsearch kibana
+#
+# 6) Windows + Docker Desktop: el healthcheck de ES puede estar verde antes de
+#    que otro contenedor resuelva el hostname 'elasticsearch'. kibana_setup
+#    reintenta la conexión y falla con exit 1 si no pudo setear la contraseña
+#    (antes el script seguía y Kibana arrancaba con credenciales incorrectas).
 #
 # 5) El warning "OpenSSL legacy providers" en los logs de Kibana es solo
 #    informativo (suele aparecer en ARM64 / Apple Silicon). No detiene el arranque.
