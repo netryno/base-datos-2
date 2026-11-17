@@ -279,7 +279,18 @@ Content-Type: application/json
 
 
 ### 5.3 Singular y plural: buscar "papa" encuentra "papas" (el análisis reduce a la raíz)
-### LIKE '%papa%' también lo encontraría, pero "huevo" no encontraría "huevos" en sentido contrario.
+
+#En SQL (LIKE '%papa%'): Si buscas "papa", sí encuentra "papas" 
+#(porque "papa" está contenido dentro de "papas"). 
+#Pero al revés falla: si en la base de datos dice 
+#"papa" (singular) y tú buscas LIKE '%papas%' 
+#(plural), no lo encuentra.En Elasticsearch 
+#(con analyzer: "spanish"): Tanto "papa" como "papas" 
+#(o "huevo" y "huevos") se reducen a la misma raíz 
+#(pap / huev), así que encuentra en ambos sentidos 
+#(singular - plural).
+
+####
 POST {{host}}/recetas/_search
 Authorization: {{auth}}
 Content-Type: application/json
@@ -291,6 +302,8 @@ Content-Type: application/json
 }
 
 
+
+
 ### 5.4 Tolerar errores de tipeo: "acete" en lugar de "aceite"
 ### Con LIKE no devolvería nada. Si no sale, prueba con "fuzziness": 2
 POST {{host}}/recetas/_search
@@ -300,7 +313,7 @@ Content-Type: application/json
 {
   "query": {
     "match": {
-      "ingredientes": { "query": "acete", "fuzziness": "AUTO" }
+      "ingredientes": { "query": "acete", "fuzziness": "auto" }
     }
   }
 }
