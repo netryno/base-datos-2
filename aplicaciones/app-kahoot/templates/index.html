@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quiz en tiempo real · Redis Pub/Sub + MongoDB</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+</head>
+<body>
+
+<!-- ============================================================ Ingreso: nombre + rol -->
+<section class="pantalla-rol" id="pantalla-ingreso">
+  <div class="rol-caja">
+    <p class="eyebrow">Base de Datos II · Redis Pub/Sub + MongoDB</p>
+    <h1>Quiz en tiempo real</h1>
+    <p class="sub">Un único <strong>Profesor</strong> registra preguntas y lanza la partida.
+       Los <strong>Jugadores</strong> responden a tiempo y ven el resultado antes del ranking.</p>
+
+    <label class="campo-nombre">
+      <span>Tu nombre <small>(obligatorio)</small></span>
+      <input id="inp-nombre" maxlength="20" placeholder="Ej. Ana" autocomplete="off" autofocus>
+    </label>
+    <p id="msg-ingreso" class="msg-error" hidden></p>
+
+    <div class="rol-opciones">
+      <button class="rol-opcion" data-rol="profesor">
+        <svg viewBox="0 0 24 24"><path d="M3 10v4a1 1 0 0 0 1 1h3l5 4V5L7 9H4a1 1 0 0 0-1 1z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>
+        <strong>Profesor</strong>
+        <small>Publicador. Crea preguntas, lanza la partida y controla el avance. Solo uno: <code>SET publisher:lock NX EX 15</code>.</small>
+        <em id="estado-lock">consultando…</em>
+      </button>
+      <button class="rol-opcion" data-rol="jugador">
+        <svg viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1"/><rect x="17" y="14" width="4" height="6" rx="1"/></svg>
+        <strong>Jugador</strong>
+        <small>Suscriptor. Entra a la sala, responde cada pregunta y compite por el podio. Pueden ser muchos.</small>
+        <em id="estado-sala">siempre disponible</em>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ Cabecera -->
+<header class="cabecera">
+  <div class="marca">
+    <span class="logo">Q<i>!</i></span>
+    <div><strong>Quiz en tiempo real</strong><small>Redis Pub/Sub · Lock · MongoDB</small></div>
+  </div>
+  <div class="cabecera-der">
+    <div class="cabecera-chips">
+      <span id="chip-rol" class="chip chip-rol"></span>
+      <span id="chip-lock" class="chip" hidden>🔒 lock · <b id="lock-ttl">–</b> s</span>
+      <span id="chip-conexion" class="chip chip-conexion">● sin conexión</span>
+    </div>
+    <div class="cabecera-acciones">
+      <button id="btn-reiniciar-sesion" class="btn btn-cab-reiniciar" type="button" title="Quita la partida y devuelve a todos los jugadores a la pantalla inicial">Reiniciar</button>
+      <button id="btn-salir" class="btn btn-fantasma">Salir</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================ Vista Profesor -->
+<main id="vista-profesor" class="tablero" hidden>
+
+  <!-- Banco de preguntas -->
+  <article class="widget">
+    <header class="widget-cab">
+      <span class="paso">01</span>
+      <div>
+        <h2>Banco de preguntas</h2>
+        <p>MongoDB · <code>categories</code> y <code>questions</code> · una sola opción correcta</p>
+      </div>
+    </header>
+    <div class="widget-cuerpo">
+      <form id="form-categoria" class="fila-controles">
+        <input id="inp-categoria" maxlength="60" placeholder="Nueva categoría (ej. Redis básico)" autocomplete="off" required>
+        <button class="btn">+ Categoría</button>
+      </form>
+
+      <div class="fila-controles">
+        <select id="sel-cat-banco" aria-label="Categoría"></select>
+        <button id="btn-borrar-categoria" class="btn btn-peligro-suave" title="Eliminar categoría (solo si no tiene preguntas)">Eliminar</button>
+      </div>
+
+      <form id="form-pregunta" class="form-pregunta">
+        <textarea id="inp-texto" rows="2" maxlength="300" placeholder="Texto de la pregunta…" required></textarea>
+        <textarea id="inp-codigo" rows="4" maxlength="4000" placeholder="Bloque de código (opcional). Se muestra como bloque para docente y alumnos…" spellcheck="false" autocomplete="off"></textarea>
+        <div class="fila-controles fila-codigo-meta">
+          <input id="inp-codigo-lang" maxlength="40" placeholder="Lenguaje (opcional, ej. python, sql)" autocomplete="off">
+          <input id="inp-tiempo-pregunta" type="number" min="5" max="300" step="1" inputmode="numeric"
+            placeholder="Tiempo respuesta (s). Vacío = .env" aria-label="Segundos para responder" autocomplete="off">
+        </div>
+        <div class="opciones-edicion">
+          <label class="op-edit" data-op="a"><input type="radio" name="correcta" value="a" required><b>A</b><input id="inp-op-a" maxlength="120" placeholder="Opción A" required></label>
+          <label class="op-edit" data-op="b"><input type="radio" name="correcta" value="b"><b>B</b><input id="inp-op-b" maxlength="120" placeholder="Opción B" required></label>
+          <label class="op-edit" data-op="c"><input type="radio" name="correcta" value="c"><b>C</b><input id="inp-op-c" maxlength="120" placeholder="Opción C" required></label>
+          <label class="op-edit" data-op="d"><input type="radio" name="correcta" value="d"><b>D</b><input id="inp-op-d" maxlength="120" placeholder="Opción D" required></label>
+        </div>
+        <div class="fila-controles fila-derecha">
+          <span class="ayuda">Marca el círculo de la opción correcta.</span>
+          <button class="btn btn-primario">Guardar pregunta</button>
+        </div>
+      </form>
+
+      <ul id="lista-preguntas" class="lista-preguntas"></ul>
+    </div>
+  </article>
+
+  <!-- Partida -->
+  <article class="widget widget-partida">
+    <header class="widget-cab">
+      <span class="paso">02</span>
+      <div>
+        <h2>Partida</h2>
+        <p id="prof-partida-ayuda-tecnica">Redis · <code>game:{id}:state</code> · <code>PUBLISH game:{id}:events</code></p>
+      </div>
+      <span id="prof-estado-chip" class="estado-chip"></span>
+    </header>
+    <div class="widget-cuerpo">
+
+      <!-- Sin partida: crear -->
+      <section id="prof-crear" hidden>
+        <form id="form-partida" class="form-partida">
+          <select id="sel-cat-partida" aria-label="Categoría de la partida" required></select>
+          <input id="inp-cantidad-preguntas" type="number" min="0" step="1" inputmode="numeric"
+            placeholder="Cantidad de preguntas al azar (0 o vacío = todas)" aria-label="Cantidad de preguntas al azar" autocomplete="off">
+          <details id="det-subconjunto">
+            <summary>Elegir preguntas (por defecto todas, en orden aleatorio)</summary>
+            <ul id="lista-subconjunto" class="lista-subconjunto"></ul>
+          </details>
+          <button class="btn btn-primario btn-grande">Crear partida (abrir sala)</button>
+        </form>
+      </section>
+
+      <!-- Lobby -->
+      <section id="prof-lobby" hidden>
+        <div class="titulo-partida"><strong id="prof-lobby-titulo"></strong><small id="prof-lobby-detalle"></small></div>
+        <div class="sala">
+          <div class="sala-cab"><span>Jugadores en la sala</span><b id="prof-lobby-n">0</b></div>
+          <div id="prof-jugadores" class="jugadores"></div>
+        </div>
+        <div class="fila-controles fila-derecha">
+          <button id="btn-vaciar-sala" class="btn btn-peligro-suave" type="button" title="Quita a todos de la lista (deben volver a unirse)">Vaciar sala</button>
+          <button id="btn-cancelar-lobby" class="btn btn-peligro-suave">Cancelar partida</button>
+          <button id="btn-lanzar" class="btn btn-primario btn-grande">Lanzar primera pregunta ▶</button>
+        </div>
+      </section>
+
+      <!-- Pregunta abierta -->
+      <section id="prof-pregunta" hidden>
+        <div class="progreso"><span id="prof-progreso"></span><span id="prof-conteo" class="conteo"></span></div>
+        <div class="temporizador"><div class="barra"><i id="prof-barra"></i></div><b id="prof-segundos">10</b></div>
+        <div id="prof-enunciado" class="enunciado-pregunta"></div>
+        <div id="prof-opciones" class="opciones"></div>
+        <div class="fila-controles fila-derecha">
+          <button class="btn btn-peligro-suave btn-cancelar">Cancelar partida</button>
+        </div>
+      </section>
+
+      <!-- Revelación: acierto / error antes del ranking -->
+      <section id="prof-revelacion" class="revelacion" hidden>
+        <div id="prof-rev-enunciado" class="enunciado-pregunta"></div>
+        <div id="prof-rev-opciones" class="opciones"></div>
+        <p id="prof-rev-msg" class="revelacion-msg"></p>
+      </section>
+
+      <!-- Ranking tras la pregunta (solo tabla de posiciones; la pregunta no se repite aquí) -->
+      <section id="prof-ranking" hidden>
+        <div class="progreso"><span id="prof-rank-progreso"></span><span id="prof-rank-conteo" class="conteo"></span></div>
+        <div class="sala">
+          <div class="sala-cab"><span>Ranking · Top <b class="top-n">10</b></span></div>
+          <ol id="prof-rank-lista" class="ranking"></ol>
+        </div>
+        <div class="fila-controles fila-derecha">
+          <button class="btn btn-peligro-suave btn-cancelar">Cancelar partida</button>
+          <button id="btn-siguiente" class="btn btn-primario btn-grande">Siguiente pregunta ▶</button>
+        </div>
+      </section>
+
+      <!-- Final -->
+      <section id="prof-final" hidden>
+        <div class="titulo-partida"><strong id="prof-final-titulo"></strong><small id="prof-final-detalle"></small></div>
+        <div id="prof-podio" class="podio"></div>
+        <ol id="prof-final-lista" class="ranking"></ol>
+        <div class="fila-controles fila-derecha">
+          <button id="btn-nueva" class="btn btn-primario btn-grande">Nueva partida</button>
+        </div>
+      </section>
+
+    </div>
+    <footer class="widget-terminal">
+      <button id="toggle-term-prof" type="button" class="btn-terminal" aria-expanded="false" title="Mostrar u ocultar consola Redis">&#62;_ redis-cli</button>
+      <pre id="term-prof" class="terminal" hidden></pre>
+    </footer>
+  </article>
+</main>
+
+<!-- ============================================================ Vista Jugador -->
+<main id="vista-jugador" class="tablero tablero-jugador" hidden>
+  <article class="widget">
+    <header class="widget-cab">
+      <span id="jug-avatar" class="avatar-cab"></span>
+      <div>
+        <h2 id="jug-titulo">Sala de juego</h2>
+        <p id="jug-subtitulo" class="jug-subtitulo-contexto">Esperando al profesor…</p>
+      </div>
+      <span id="jug-estado-chip" class="estado-chip"></span>
+    </header>
+    <div class="widget-cuerpo">
+
+      <div id="jug-espectador" class="aviso" hidden>
+        👀 La partida ya comenzó: eres <strong>espectador</strong> hasta la próxima partida.
+      </div>
+
+      <!-- Sin partida -->
+      <section id="jug-espera" hidden>
+        <div class="espera"><div class="puntos"><i></i><i></i><i></i></div><p>Esperando a que el Profesor abra una sala…</p></div>
+      </section>
+
+      <!-- Lobby -->
+      <section id="jug-lobby" hidden>
+        <div class="sala">
+          <div class="sala-cab"><span>Jugadores en la sala</span><b id="jug-lobby-n">0</b></div>
+          <div id="jug-jugadores" class="jugadores"></div>
+        </div>
+        <p class="ayuda centrado">La partida empieza cuando el Profesor lance la primera pregunta.</p>
+      </section>
+
+      <!-- Pregunta -->
+      <section id="jug-pregunta" hidden>
+        <div class="progreso"><span id="jug-progreso"></span><span id="jug-mi-puntaje" class="conteo"></span></div>
+        <div class="temporizador"><div class="barra"><i id="jug-barra"></i></div><b id="jug-segundos">10</b></div>
+        <div id="jug-enunciado" class="enunciado-pregunta"></div>
+        <div id="jug-opciones" class="opciones opciones-grandes"></div>
+        <p id="jug-estado-respuesta" class="estado-respuesta"></p>
+      </section>
+
+      <section id="jug-revelacion" class="revelacion revelacion-jugador" hidden>
+        <div id="jug-rev-banner" class="revelacion-banner" hidden>
+          <span id="jug-rev-icono" class="revelacion-icono" aria-hidden="true"></span>
+          <strong id="jug-rev-titulo"></strong>
+          <p id="jug-rev-detalle"></p>
+        </div>
+      </section>
+
+      <!-- Ranking (solo posiciones; sin repetir enunciado ni opciones) -->
+      <section id="jug-ranking" hidden>
+        <div class="sala">
+          <div class="sala-cab"><span>Ranking · Top <b class="top-n">10</b></span><b id="jug-mi-posicion"></b></div>
+          <ol id="jug-rank-lista" class="ranking"></ol>
+        </div>
+        <p class="ayuda centrado" id="jug-rank-ayuda">Esperando la siguiente pregunta…</p>
+      </section>
+
+      <!-- Final -->
+      <section id="jug-final" hidden>
+        <div class="titulo-partida"><strong id="jug-final-titulo"></strong><small id="jug-final-detalle"></small></div>
+        <div id="jug-podio" class="podio"></div>
+        <ol id="jug-final-lista" class="ranking"></ol>
+        <p class="ayuda centrado">Cuando el Profesor abra una nueva sala entrarás automáticamente.</p>
+      </section>
+
+    </div>
+    <footer class="widget-terminal">
+      <button id="toggle-term-jug" type="button" class="btn-terminal" aria-expanded="false" title="Mostrar u ocultar consola Redis">&#62;_ redis-cli</button>
+      <pre id="term-jug" class="terminal" hidden></pre>
+    </footer>
+  </article>
+</main>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

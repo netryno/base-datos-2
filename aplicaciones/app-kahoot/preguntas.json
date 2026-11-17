@@ -1,0 +1,175 @@
+{
+  "categorias": [
+    {
+      "nombre": "Redis",
+      "preguntas": [
+        { "texto": "¿Qué tipo de base de datos es Redis?", "opciones": { "a": "Relacional", "b": "Clave-valor en memoria", "c": "Orientada a grafos", "d": "Orientada a documentos" }, "correcta": "b" },
+        { "texto": "¿Qué comando guarda un valor de tipo string en una clave?", "opciones": { "a": "PUT", "b": "INSERT", "c": "SET", "d": "ADD" }, "correcta": "c" },
+        { "texto": "¿Qué comando devuelve los segundos de vida que le quedan a una clave?", "opciones": { "a": "TTL", "b": "EXPIRE", "c": "PERSIST", "d": "AGE" }, "correcta": "a" },
+        { "texto": "¿Qué hace la opción NX en el comando SET clave valor NX?", "opciones": { "a": "Sobrescribe siempre el valor", "b": "Solo escribe si la clave NO existe", "c": "Solo escribe si la clave ya existe", "d": "Borra la clave después de escribir" }, "correcta": "b" },
+        { "texto": "¿Qué comando envía un mensaje a un canal de Pub/Sub?", "opciones": { "a": "SEND", "b": "EMIT", "c": "SUBSCRIBE", "d": "PUBLISH" }, "correcta": "d" },
+        { "texto": "¿Qué devuelve el comando PUBLISH?", "opciones": { "a": "El mensaje enviado", "b": "El número de suscriptores que recibieron el mensaje", "c": "La cadena OK", "d": "El nombre del canal" }, "correcta": "b" },
+        { "texto": "¿Qué comando incrementa en 1, de forma atómica, el valor numérico de una clave?", "opciones": { "a": "INCR", "b": "ADD", "c": "PLUS", "d": "SUM" }, "correcta": "a" },
+        { "texto": "¿Sobre qué estructura de datos operan los comandos HSET y HGET?", "opciones": { "a": "Lista (list)", "b": "Conjunto (set)", "c": "Hash", "d": "Conjunto ordenado (sorted set)" }, "correcta": "c" },
+        { "texto": "¿Qué comando agrega un elemento a un conjunto (set)?", "opciones": { "a": "LPUSH", "b": "SADD", "c": "ZADD", "d": "HSET" }, "correcta": "b" },
+        { "texto": "¿Qué estructura de Redis mantiene sus elementos ordenados por una puntuación (score)?", "opciones": { "a": "List", "b": "Set", "c": "Hash", "d": "Sorted set" }, "correcta": "d" },
+        { "texto": "¿Qué comando elimina una clave?", "opciones": { "a": "REMOVE", "b": "DROP", "c": "DEL", "d": "CLEAR" }, "correcta": "c" },
+        { "texto": "¿Qué mecanismo de persistencia de Redis registra cada operación de escritura en un archivo de solo anexado?", "opciones": { "a": "RDB (snapshot)", "b": "AOF (Append Only File)", "c": "WAL", "d": "Binlog" }, "correcta": "b" },
+        { "texto": "¿Qué comando verifica si una clave existe?", "opciones": { "a": "EXISTS", "b": "HAS", "c": "CHECK", "d": "FIND" }, "correcta": "a" },
+        { "texto": "¿Qué caracteriza a los mensajes de Pub/Sub en Redis?", "opciones": { "a": "Se guardan en disco hasta que alguien los lea", "b": "Solo los reciben los suscriptores conectados en ese momento", "c": "Se entregan a cualquier cliente que se conecte después", "d": "Requieren una confirmación (ACK) del receptor" }, "correcta": "b" }
+      ]
+    },
+    {
+      "nombre": "Mongo",
+      "preguntas": [
+        { "texto": "¿Qué tipo de base de datos es MongoDB?", "opciones": { "a": "Relacional", "b": "Clave-valor", "c": "Orientada a documentos", "d": "Orientada a columnas" }, "correcta": "c" },
+        { "texto": "¿En qué formato binario almacena MongoDB sus documentos internamente?", "opciones": { "a": "XML", "b": "BSON", "c": "CSV", "d": "YAML" }, "correcta": "b" },
+        { "texto": "¿Cuál es el equivalente a una tabla relacional en MongoDB?", "opciones": { "a": "Documento", "b": "Colección", "c": "Índice", "d": "Esquema" }, "correcta": "b" },
+        { "texto": "¿Qué campo identifica de forma única a cada documento de una colección?", "opciones": { "a": "id", "b": "key", "c": "_id", "d": "uuid" }, "correcta": "c" },
+        { "texto": "¿Qué método inserta un solo documento en una colección?", "opciones": { "a": "insertOne()", "b": "addOne()", "c": "put()", "d": "create()" }, "correcta": "a" },
+        { "texto": "¿Qué método devuelve el primer documento que cumple un filtro?", "opciones": { "a": "find()", "b": "findOne()", "c": "get()", "d": "select()" }, "correcta": "b" },
+        { "texto": "¿Qué operador de consulta significa \"mayor que\"?", "opciones": { "a": "$more", "b": "$gte", "c": "$gt", "d": "$bigger" }, "correcta": "c" },
+        { "texto": "¿Qué operador de actualización incrementa un campo numérico?", "opciones": { "a": "$add", "b": "$inc", "c": "$plus", "d": "$sum" }, "correcta": "b" },
+        { "texto": "¿Qué método ejecuta un pipeline de agregación por etapas?", "opciones": { "a": "aggregate()", "b": "group()", "c": "reduce()", "d": "pipeline()" }, "correcta": "a" },
+        { "texto": "¿Qué etapa del pipeline de agregación filtra documentos?", "opciones": { "a": "$filter", "b": "$where", "c": "$match", "d": "$select" }, "correcta": "c" },
+        { "texto": "¿Qué método crea un índice sobre una colección?", "opciones": { "a": "addIndex()", "b": "createIndex()", "c": "makeIndex()", "d": "index()" }, "correcta": "b" },
+        { "texto": "¿Qué método elimina todos los documentos que cumplen un filtro?", "opciones": { "a": "deleteMany()", "b": "removeAll()", "c": "dropMany()", "d": "deleteAll()" }, "correcta": "a" },
+        { "texto": "¿Qué es un replica set en MongoDB?", "opciones": { "a": "Una copia de una colección dentro de la misma base", "b": "Un grupo de servidores que mantienen los mismos datos para alta disponibilidad", "c": "Un índice duplicado", "d": "Un respaldo comprimido en disco" }, "correcta": "b" },
+        { "texto": "¿Qué es el sharding en MongoDB?", "opciones": { "a": "Cifrar los documentos", "b": "Comprimir las colecciones", "c": "Distribuir los datos horizontalmente entre varios servidores", "d": "Replicar los índices" }, "correcta": "c" }
+      ]
+    },
+    {
+      "nombre": "ChromaDB",
+      "preguntas": [
+        { "texto": "¿Qué tipo de base de datos es ChromaDB?", "opciones": { "a": "Relacional", "b": "Vectorial", "c": "De grafos", "d": "Clave-valor" }, "correcta": "b" },
+        { "texto": "¿Qué almacena principalmente ChromaDB?", "opciones": { "a": "Tablas con filas y columnas", "b": "Embeddings (vectores) junto con sus documentos y metadatos", "c": "Archivos binarios grandes", "d": "Triples RDF" }, "correcta": "b" },
+        { "texto": "¿Qué es un embedding?", "opciones": { "a": "Una representación numérica (vector) de un texto, imagen u otro dato", "b": "Una clave primaria", "c": "Un índice de tipo B-tree", "d": "Un archivo JSON" }, "correcta": "a" },
+        { "texto": "¿Cómo se agrupan los documentos en ChromaDB?", "opciones": { "a": "En tablas", "b": "En buckets", "c": "En colecciones", "d": "En esquemas" }, "correcta": "c" },
+        { "texto": "¿Qué método agrega documentos a una colección de ChromaDB?", "opciones": { "a": "insert()", "b": "add()", "c": "push()", "d": "put()" }, "correcta": "b" },
+        { "texto": "¿Qué método busca los documentos más similares a una consulta?", "opciones": { "a": "find()", "b": "select()", "c": "query()", "d": "match()" }, "correcta": "c" },
+        { "texto": "¿Qué parámetro de query() define cuántos resultados similares se devuelven?", "opciones": { "a": "limit", "b": "top", "c": "n_results", "d": "k_max" }, "correcta": "c" },
+        { "texto": "¿Qué métrica de distancia usa ChromaDB por defecto para comparar vectores?", "opciones": { "a": "Coseno", "b": "L2 (euclidiana)", "c": "Hamming", "d": "Jaccard" }, "correcta": "b" },
+        { "texto": "¿Qué componente de ChromaDB convierte el texto en vectores?", "opciones": { "a": "El tokenizer", "b": "La función de embedding (embedding function)", "c": "El parser", "d": "El driver" }, "correcta": "b" },
+        { "texto": "¿Para qué sirven los metadatos de un documento en ChromaDB?", "opciones": { "a": "Para cifrar el documento", "b": "Para filtrar los resultados con la cláusula where", "c": "Para definir el esquema de la colección", "d": "Para replicar la colección" }, "correcta": "b" },
+        { "texto": "¿Cuál es un caso de uso típico de ChromaDB?", "opciones": { "a": "Transacciones bancarias", "b": "Búsqueda semántica y RAG con modelos de lenguaje", "c": "Facturación contable", "d": "Control de inventario" }, "correcta": "b" },
+        { "texto": "¿Qué significa la sigla RAG?", "opciones": { "a": "Random Access Graph", "b": "Retrieval-Augmented Generation", "c": "Relational Aggregation Grid", "d": "Rapid Application Generator" }, "correcta": "b" },
+        { "texto": "En el cliente Python de ChromaDB, ¿qué cliente guarda los datos en disco?", "opciones": { "a": "EphemeralClient", "b": "PersistentClient", "c": "MemoryClient", "d": "DiskClient" }, "correcta": "b" },
+        { "texto": "¿Qué permite el parámetro where_document en query()?", "opciones": { "a": "Filtrar por el contenido del texto del documento", "b": "Ordenar los resultados por fecha", "c": "Elegir el modelo de embedding", "d": "Cambiar de colección" }, "correcta": "a" }
+      ]
+    },
+    {
+      "nombre": "SQL Server",
+      "preguntas": [
+        { "texto": "¿Qué empresa desarrolla SQL Server?", "opciones": { "a": "Oracle", "b": "Microsoft", "c": "IBM", "d": "SAP" }, "correcta": "b" },
+        { "texto": "¿Cómo se llama el dialecto SQL de SQL Server?", "opciones": { "a": "PL/SQL", "b": "PL/pgSQL", "c": "T-SQL", "d": "SQL/PSM" }, "correcta": "c" },
+        { "texto": "¿Cuál es el puerto TCP por defecto de SQL Server?", "opciones": { "a": "3306", "b": "5432", "c": "1521", "d": "1433" }, "correcta": "d" },
+        { "texto": "¿Qué herramienta gráfica oficial se usa para administrar SQL Server?", "opciones": { "a": "pgAdmin", "b": "SQL Server Management Studio (SSMS)", "c": "MySQL Workbench", "d": "MongoDB Compass" }, "correcta": "b" },
+        { "texto": "¿Qué cláusula de T-SQL limita el número de filas que devuelve un SELECT?", "opciones": { "a": "LIMIT", "b": "TOP", "c": "ROWNUM", "d": "FIRST" }, "correcta": "b" },
+        { "texto": "¿Qué propiedad de columna genera valores autoincrementales en SQL Server?", "opciones": { "a": "SERIAL", "b": "AUTO_INCREMENT", "c": "IDENTITY", "d": "COUNTER" }, "correcta": "c" },
+        { "texto": "¿Qué base de datos del sistema guarda la configuración de la instancia y los logins?", "opciones": { "a": "model", "b": "tempdb", "c": "msdb", "d": "master" }, "correcta": "d" },
+        { "texto": "¿Qué base de datos del sistema almacena los trabajos (jobs) del SQL Server Agent?", "opciones": { "a": "msdb", "b": "master", "c": "model", "d": "tempdb" }, "correcta": "a" },
+        { "texto": "¿Qué instrucción inicia una transacción explícita en T-SQL?", "opciones": { "a": "START TRANSACTION", "b": "BEGIN TRANSACTION", "c": "OPEN TRANSACTION", "d": "INIT TRAN" }, "correcta": "b" },
+        { "texto": "¿Qué tipo de respaldo copia solo los cambios realizados desde el último respaldo completo?", "opciones": { "a": "Completo (Full)", "b": "Diferencial (Differential)", "c": "De log de transacciones", "d": "Copy-only" }, "correcta": "b" },
+        { "texto": "¿Qué función de T-SQL devuelve la fecha y hora actual del sistema?", "opciones": { "a": "NOW()", "b": "SYSDATE", "c": "GETDATE()", "d": "CURRENT_TIME()" }, "correcta": "c" },
+        { "texto": "¿Qué modelo de recuperación permite restaurar una base a un punto en el tiempo?", "opciones": { "a": "Simple", "b": "Completo (Full)", "c": "Registro masivo (Bulk-logged)", "d": "Mínimo" }, "correcta": "b" },
+        { "texto": "¿Qué modo de autenticación de SQL Server usa las cuentas de Windows?", "opciones": { "a": "Autenticación de SQL Server", "b": "Autenticación de Windows", "c": "Autenticación por token", "d": "Autenticación anónima" }, "correcta": "b" },
+        { "texto": "¿Qué objeto almacena un conjunto de instrucciones T-SQL precompiladas y reutilizables?", "opciones": { "a": "Vista", "b": "Trigger", "c": "Procedimiento almacenado", "d": "Índice" }, "correcta": "c" }
+      ]
+    },
+    {
+      "nombre": "MySQL",
+      "preguntas": [
+        { "texto": "¿Cuál es el puerto TCP por defecto de MySQL?", "opciones": { "a": "1433", "b": "3306", "c": "5432", "d": "27017" }, "correcta": "b" },
+        { "texto": "¿Cuál es el motor de almacenamiento por defecto de MySQL desde la versión 5.5?", "opciones": { "a": "MyISAM", "b": "InnoDB", "c": "MEMORY", "d": "CSV" }, "correcta": "b" },
+        { "texto": "¿Qué motor de almacenamiento de MySQL soporta transacciones y claves foráneas?", "opciones": { "a": "MyISAM", "b": "InnoDB", "c": "CSV", "d": "ARCHIVE" }, "correcta": "b" },
+        { "texto": "¿Qué atributo de columna genera valores autoincrementales en MySQL?", "opciones": { "a": "IDENTITY", "b": "SERIAL8", "c": "AUTO_INCREMENT", "d": "SEQUENCE" }, "correcta": "c" },
+        { "texto": "¿Qué cláusula limita el número de filas que devuelve un SELECT en MySQL?", "opciones": { "a": "TOP", "b": "LIMIT", "c": "FETCH FIRST", "d": "ROWNUM" }, "correcta": "b" },
+        { "texto": "¿Qué herramienta gráfica oficial se usa para administrar MySQL?", "opciones": { "a": "SSMS", "b": "pgAdmin", "c": "MySQL Workbench", "d": "Compass" }, "correcta": "c" },
+        { "texto": "¿Qué sentencia muestra las bases de datos existentes en MySQL?", "opciones": { "a": "LIST DATABASES", "b": "SHOW DATABASES", "c": "SELECT DATABASES", "d": "\\l" }, "correcta": "b" },
+        { "texto": "¿Qué sentencia lista las tablas de la base de datos actual en MySQL?", "opciones": { "a": "SHOW TABLES", "b": "LIST TABLES", "c": "DESCRIBE ALL", "d": "\\dt" }, "correcta": "a" },
+        { "texto": "¿Qué sentencia muestra la estructura (columnas y tipos) de una tabla en MySQL?", "opciones": { "a": "SHOW STRUCTURE tabla", "b": "EXPLAIN TABLE tabla", "c": "DESCRIBE tabla", "d": "INFO tabla" }, "correcta": "c" },
+        { "texto": "¿Qué utilidad de línea de comandos genera respaldos lógicos (SQL) en MySQL?", "opciones": { "a": "mysqldump", "b": "pg_dump", "c": "bcp", "d": "mongodump" }, "correcta": "a" },
+        { "texto": "¿Qué log de MySQL se usa para la replicación y la recuperación a un punto en el tiempo?", "opciones": { "a": "Redo log", "b": "Binary log (binlog)", "c": "Slow query log", "d": "Error log" }, "correcta": "b" },
+        { "texto": "¿Qué sentencia crea un usuario en MySQL?", "opciones": { "a": "ADD USER ana", "b": "CREATE LOGIN ana", "c": "CREATE USER 'ana'@'localhost' IDENTIFIED BY 'clave'", "d": "NEW USER ana" }, "correcta": "c" },
+        { "texto": "¿Qué sentencia otorga privilegios a un usuario en MySQL?", "opciones": { "a": "ALLOW", "b": "GRANT", "c": "PERMIT", "d": "ENABLE" }, "correcta": "b" },
+        { "texto": "¿Qué función de MySQL devuelve la fecha y hora actual?", "opciones": { "a": "GETDATE()", "b": "SYSDATETIME()", "c": "NOW()", "d": "TODAY()" }, "correcta": "c" }
+      ]
+    },
+    {
+      "nombre": "PostgreSQL",
+      "preguntas": [
+        { "texto": "¿Cuál es el puerto TCP por defecto de PostgreSQL?", "opciones": { "a": "3306", "b": "1433", "c": "5432", "d": "8080" }, "correcta": "c" },
+        { "texto": "¿Cómo se llama el lenguaje procedural principal de PostgreSQL?", "opciones": { "a": "T-SQL", "b": "PL/SQL", "c": "PL/pgSQL", "d": "PSQL" }, "correcta": "c" },
+        { "texto": "¿Qué pseudotipo crea una columna entera autoincremental en PostgreSQL?", "opciones": { "a": "AUTO_INCREMENT", "b": "IDENTITY_ONLY", "c": "SERIAL", "d": "COUNTER" }, "correcta": "c" },
+        { "texto": "¿Qué herramienta gráfica oficial se usa para administrar PostgreSQL?", "opciones": { "a": "pgAdmin", "b": "SSMS", "c": "MySQL Workbench", "d": "Compass" }, "correcta": "a" },
+        { "texto": "¿Cómo se llama el cliente de línea de comandos de PostgreSQL?", "opciones": { "a": "mysql", "b": "sqlcmd", "c": "psql", "d": "pgsh" }, "correcta": "c" },
+        { "texto": "¿Qué metacomando de psql lista las bases de datos?", "opciones": { "a": "\\dt", "b": "\\l", "c": "\\d", "d": "\\du" }, "correcta": "b" },
+        { "texto": "¿Qué metacomando de psql lista las tablas del esquema actual?", "opciones": { "a": "\\l", "b": "\\dt", "c": "\\db", "d": "\\dn" }, "correcta": "b" },
+        { "texto": "¿Qué utilidad hace respaldos lógicos de una base de datos PostgreSQL?", "opciones": { "a": "mysqldump", "b": "pg_dump", "c": "bcp", "d": "pg_ctl" }, "correcta": "b" },
+        { "texto": "¿Qué tipo de dato de PostgreSQL almacena JSON en formato binario e indexable?", "opciones": { "a": "json", "b": "jsonb", "c": "text", "d": "bytea" }, "correcta": "b" },
+        { "texto": "¿Qué mecanismo usa PostgreSQL para el control de concurrencia?", "opciones": { "a": "Bloqueo de toda la tabla en cada escritura", "b": "MVCC (control de concurrencia multiversión)", "c": "Una cola única de transacciones", "d": "Semáforos globales" }, "correcta": "b" },
+        { "texto": "¿Qué comando de PostgreSQL recupera el espacio ocupado por filas muertas?", "opciones": { "a": "VACUUM", "b": "CLEAN", "c": "PURGE", "d": "SHRINK" }, "correcta": "a" },
+        { "texto": "¿Qué archivo controla qué clientes pueden conectarse a PostgreSQL y con qué método de autenticación?", "opciones": { "a": "postgresql.conf", "b": "pg_hba.conf", "c": "pg_ident.conf", "d": "recovery.conf" }, "correcta": "b" },
+        { "texto": "¿Qué cláusula se combina con LIMIT para paginar resultados en PostgreSQL?", "opciones": { "a": "SKIP", "b": "TOP", "c": "OFFSET", "d": "START" }, "correcta": "c" },
+        { "texto": "¿Qué es una extensión de PostgreSQL (por ejemplo, PostGIS)?", "opciones": { "a": "Un módulo que agrega tipos, funciones u operadores al servidor", "b": "Un tipo de índice", "c": "Una copia de seguridad", "d": "Un esquema del sistema" }, "correcta": "a" }
+      ]
+    },
+    {
+      "nombre": "Base de datos",
+      "preguntas": [
+        { "texto": "¿Qué significa la sigla SGBD?", "opciones": { "a": "Sistema General de Bases de Datos", "b": "Sistema de Gestión de Bases de Datos", "c": "Servicio Global de Backup de Datos", "d": "Sistema Gráfico de Bases de Datos" }, "correcta": "b" },
+        { "texto": "¿Qué es una clave primaria?", "opciones": { "a": "La columna (o columnas) que identifica de forma única cada fila", "b": "Una columna cifrada", "c": "Una columna que acepta valores nulos repetidos", "d": "Un índice opcional" }, "correcta": "a" },
+        { "texto": "¿Qué es una clave foránea?", "opciones": { "a": "Una clave que pertenece a otra base de datos", "b": "Una columna que referencia la clave primaria de otra tabla", "c": "Una clave cifrada", "d": "Una clave temporal" }, "correcta": "b" },
+        { "texto": "¿Qué significa ACID en el contexto de las transacciones?", "opciones": { "a": "Atomicidad, Consistencia, Aislamiento, Durabilidad", "b": "Acceso, Control, Integridad, Datos", "c": "Alta, Consulta, Inserción, Borrado", "d": "Automático, Compacto, Indexado, Distribuido" }, "correcta": "a" },
+        { "texto": "¿Qué propiedad ACID garantiza que una transacción se ejecuta por completo o no se ejecuta en absoluto?", "opciones": { "a": "Consistencia", "b": "Aislamiento", "c": "Atomicidad", "d": "Durabilidad" }, "correcta": "c" },
+        { "texto": "¿Qué sentencia SQL se usa para consultar (leer) datos?", "opciones": { "a": "GET", "b": "SELECT", "c": "FETCH", "d": "READ" }, "correcta": "b" },
+        { "texto": "¿Cuál de estas sentencias pertenece al DDL (lenguaje de definición de datos)?", "opciones": { "a": "INSERT", "b": "UPDATE", "c": "CREATE TABLE", "d": "SELECT" }, "correcta": "c" },
+        { "texto": "¿Cuál de estas sentencias pertenece al DML (lenguaje de manipulación de datos)?", "opciones": { "a": "CREATE", "b": "ALTER", "c": "DROP", "d": "UPDATE" }, "correcta": "d" },
+        { "texto": "¿Qué es la normalización de una base de datos?", "opciones": { "a": "Cifrar los datos sensibles", "b": "Organizar las tablas para reducir la redundancia y evitar anomalías", "c": "Comprimir la base de datos", "d": "Programar respaldos periódicos" }, "correcta": "b" },
+        { "texto": "¿Qué tipo de JOIN devuelve solo las filas que tienen coincidencia en ambas tablas?", "opciones": { "a": "LEFT JOIN", "b": "FULL OUTER JOIN", "c": "INNER JOIN", "d": "CROSS JOIN" }, "correcta": "c" },
+        { "texto": "¿Para qué sirve principalmente un índice?", "opciones": { "a": "Cifrar columnas", "b": "Acelerar las búsquedas y consultas", "c": "Garantizar las transacciones", "d": "Reducir el tamaño de la tabla" }, "correcta": "b" },
+        { "texto": "¿Qué sentencia deshace los cambios de una transacción en curso?", "opciones": { "a": "UNDO", "b": "CANCEL", "c": "ROLLBACK", "d": "REVERT" }, "correcta": "c" },
+        { "texto": "¿Qué describe mejor el término NoSQL?", "opciones": { "a": "Bases de datos que prohíben usar SQL", "b": "Bases de datos con modelos no relacionales (\"not only SQL\")", "c": "Bases de datos sin seguridad", "d": "Bases de datos que no permiten índices" }, "correcta": "b" },
+        { "texto": "¿Qué cláusula SQL agrupa filas para aplicar funciones de agregación como COUNT o SUM?", "opciones": { "a": "ORDER BY", "b": "GROUP BY", "c": "HAVING", "d": "PARTITION" }, "correcta": "b" }
+      ]
+    },
+    {
+      "nombre": "Cultura general de Bolivia",
+      "preguntas": [
+        { "texto": "¿Cuál es la capital constitucional de Bolivia?", "opciones": { "a": "La Paz", "b": "Sucre", "c": "Cochabamba", "d": "Santa Cruz de la Sierra" }, "correcta": "b" },
+        { "texto": "¿En qué departamento se encuentra la mayor parte del Salar de Uyuni?", "opciones": { "a": "Oruro", "b": "Potosí", "c": "La Paz", "d": "Tarija" }, "correcta": "b" },
+        { "texto": "¿Qué bebida caliente de maíz morado es típica de las mañanas paceñas?", "opciones": { "a": "Chicha", "b": "Api", "c": "Mocochinchi", "d": "Singani con soda" }, "correcta": "b" },
+        { "texto": "¿Qué exclamación de origen aymara se usa en Bolivia para celebrar algo con alegría?", "opciones": { "a": "¡Olé!", "b": "¡Jallalla!", "c": "¡Eureka!", "d": "¡Oído!" }, "correcta": "b" },
+        { "texto": "¿Qué carnaval boliviano fue declarado Obra Maestra del Patrimonio Oral e Intangible de la Humanidad por la UNESCO?", "opciones": { "a": "Carnaval de Santa Cruz", "b": "Carnaval de Tarija", "c": "Carnaval de Oruro", "d": "Carnaval de Cochabamba" }, "correcta": "c" },
+        { "texto": "¿Qué plato paceño combina pollo desmenuzado, papa, chuño y salsa con maní?", "opciones": { "a": "Silpancho", "b": "Pique macho", "c": "Sajta de pollo", "d": "Fricasé" }, "correcta": "c" },
+        { "texto": "¿En qué ciudad está el Cristo de la Concordia, una de las esculturas de Cristo más altas del mundo?", "opciones": { "a": "Sucre", "b": "El Alto", "c": "Cochabamba", "d": "Trinidad" }, "correcta": "c" },
+        { "texto": "¿Qué pan crujiente es el favorito para el sándwich de chola y muchos desayunos en La Paz?", "opciones": { "a": "Marraqueta", "b": "Hallulla", "c": "Pan de muerto", "d": "Baguette" }, "correcta": "a" },
+        { "texto": "¿Qué anfibio endémico del lago Titicaca es símbolo de fauna boliviana en peligro?", "opciones": { "a": "Rana gigante del Titicaca (k'airi)", "b": "Iguana de Chiquitos", "c": "Delfín rosado del Mamoré", "d": "Tucán andino" }, "correcta": "a" },
+        { "texto": "¿En qué fecha se celebra cada año la feria de las Alasitas (miniaturas y ofrendas) en La Paz?", "opciones": { "a": "24 de enero", "b": "2 de febrero", "c": "1° de mayo", "d": "6 de agosto" }, "correcta": "a" },
+        { "texto": "¿Qué instrumento de tubos andinos es icono de bandas tradicionales bolivianas?", "opciones": { "a": "Charango", "b": "Zampoña", "c": "Bombo", "d": "Quena solamente" }, "correcta": "b" },
+        { "texto": "¿Qué brocheta callejera de corazón de res se asocia a las noches paceñas y cochabambinas?", "opciones": { "a": "Anticucho", "b": "Salchipapa", "c": "Empanada frita", "d": "Hot dog" }, "correcta": "a" },
+        { "texto": "¿Cuál de estos NO es un departamento de Bolivia?", "opciones": { "a": "Pando", "b": "Beni", "c": "Jujuy", "d": "Tarija" }, "correcta": "c" },
+        { "texto": "¿Qué colores tiene la bandera de Bolivia, de arriba abajo?", "opciones": { "a": "Verde, blanco y rojo", "b": "Rojo, amarillo y verde", "c": "Azul, amarillo y rojo", "d": "Rojo, blanco y azul" }, "correcta": "b" }
+      ]
+    },
+    {
+      "nombre": "Historia de Bolivia",
+      "preguntas": [
+        { "texto": "¿En qué año se proclamó la independencia de Bolivia?", "opciones": { "a": "1809", "b": "1810", "c": "1825", "d": "1841" }, "correcta": "c" },
+        { "texto": "¿Qué figura da nombre oficial al país desde su fundación?", "opciones": { "a": "José de San Martín", "b": "Simón Bolívar", "c": "Antonio José de Sucre", "d": "Bernardo O'Higgins" }, "correcta": "b" },
+        { "texto": "¿Qué líder indígena encabezó, junto a Bartolina Sisa, la gran rebelión de 1781?", "opciones": { "a": "Túpac Amaru II", "b": "Túpac Katari", "c": "Rimachi", "d": "Lautaro" }, "correcta": "b" },
+        { "texto": "¿En qué ciudad ocurrió el llamado «Grito del 25 de mayo de 1809» en el Alto Perú?", "opciones": { "a": "Potosí", "b": "Chuquisaca (Sucre)", "c": "Oruro", "d": "Santa Cruz" }, "correcta": "b" },
+        { "texto": "¿Qué guerra enfrentó a Bolivia y Paraguay entre 1932 y 1935?", "opciones": { "a": "Guerra del Pacífico", "b": "Guerra del Chaco", "c": "Guerra Federal", "d": "Guerra de la Independencia" }, "correcta": "b" },
+        { "texto": "¿Qué recurso motivó en gran medida el interés por el Chaco Boreal en el siglo XX?", "opciones": { "a": "Caucho amazónico", "b": "Plata", "c": "Petróleo", "d": "Oro aluvional" }, "correcta": "c" },
+        { "texto": "¿Qué revolución de 1952 nacionalizó las minas y abolió el pongueaje?", "opciones": { "a": "Revolución de Túpac Katari", "b": "Revolución Nacional", "c": "Revolución Gloriosa", "d": "Revolución Liberal de 1899" }, "correcta": "b" },
+        { "texto": "¿Quién fue el primer presidente tras la Revolución Nacional de 1952?", "opciones": { "a": "Hernán Siles Zuazo", "b": "Víctor Paz Estenssoro", "c": "Gualberto Villarroel", "d": "Military Junta de 1964" }, "correcta": "b" },
+        { "texto": "¿En qué siglo la veta de Potosí convirtió a esa ciudad en un centro minero mundial?", "opciones": { "a": "Siglo XIV", "b": "Siglo XV", "c": "Siglo XVI", "d": "Siglo XIX" }, "correcta": "c" },
+        { "texto": "¿Cómo se conocía administrativamente la región que hoy es Bolivia en la colonia (en lo jurídico)?", "opciones": { "a": "Virreinato del Brasil", "b": "Audiencia de Charcas", "c": "Capitanía General de Chile", "d": "Gobernación de Tucumán" }, "correcta": "b" },
+        { "texto": "¿Qué conflicto (1879-1884) dejó a Bolivia sin salida soberana al océano Pacífico?", "opciones": { "a": "Guerra del Chaco", "b": "Guerra Federal", "c": "Guerra del Pacífico", "d": "Guerra Hispanoamericana" }, "correcta": "c" },
+        { "texto": "¿Qué día se conmemora cada año el «Día del Mar» en Bolivia?", "opciones": { "a": "6 de agosto", "b": "23 de marzo", "c": "25 de mayo", "d": "10 de noviembre" }, "correcta": "b" },
+        { "texto": "¿Qué cultura preincaica dejó el sitio arqueológico más emblemático cerca del lago Titicaca?", "opciones": { "a": "Moche", "b": "Tiwanaku", "c": "Nazca", "d": "Caral" }, "correcta": "b" },
+        { "texto": "¿Qué héroe boliviano murió en la defensa de Topáter (1879) sin entregar el fusil?", "opciones": { "a": "Eduardo Abaroa", "b": "Andrés de Santa Cruz", "c": "Melchor Pinto", "d": "Narciso Campero" }, "correcta": "a" }
+      ]
+    }
+  ]
+}
